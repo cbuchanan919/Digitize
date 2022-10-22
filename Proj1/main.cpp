@@ -20,7 +20,7 @@ void setup() {
 	// initialize the digital pin as an output.
 	Serial.begin(9600);
 	while (!Serial){ /* wait */ }
-	Serial.setTimeout(60000);
+//	Serial.setTimeout(100);
 }
 
 void loop() {
@@ -51,27 +51,19 @@ void getInput(){
 			if (Serial.available() > 0){
 				addChar = 1;
 				char check = Serial.read();
-				if (check == 20 && input[index - 1] == 20) { /*No double spaces*/ addChar = 0; }
-				//				Serial.print(check, DEC);
-				//				Serial.print(' ');
+				if (check == 32 && input[index - 1] == 32) { /*No double spaces*/ addChar = 0; }
 				if (index >= maxLen) { /* max input reached */ cont = 0; }
 				if (check == 13){ /* Return key entered */ cont = 0; }
 				if (check == 8 || check == 127) {
 					// backspace & delete
-					/*					
-					for (int i = 0; i < 1 && index >= 0; i++){
-						input[index] = '\0';
-						index--;
-					}
-					*/
+					addChar = 0;
+					
 					index--;
 					input[index] = '\0';
 					
-					addChar = 0;
-					// print new line?
+					// print new line
 					Serial.println();
 					Serial.print(input);
-
 				}
 
 				if (cont == 1 && addChar == 1) { 
@@ -82,8 +74,9 @@ void getInput(){
 			}
 		}
 		input[index] = '\0';
-		Serial.println("\nYou Wrote: ");
+		Serial.println("\r\nYou Wrote: ");
 		Serial.println(input);
+		Serial.println();
 	}
 }
 int getNumber(char *input, int size){
