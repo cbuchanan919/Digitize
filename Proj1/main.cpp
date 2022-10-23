@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Taskscheduler.h>
+#include <Scheduler.h>
 
 // Define section: 
 #define t_OFF 0
@@ -34,7 +34,7 @@ void showVersion();
 // led settings
 char ledColor; 		// t_green, t_red
 char ledStatus;		// t_on, t_off, t_blink
-int blinkRate;		// how fast to blink
+const int blinkRate = 500;	// how fast to blink in ms
 
 const char lookupTable[] = {'o', 'f', 3, t_OFF, 
 			    'o', 'n', 2, t_ON, 
@@ -61,12 +61,19 @@ void setup() {
 	Serial.setTimeout(10000);
 	while (!Serial){ /*wait*/}
 
+	// initialize pins (leds) as outputs.
+	pinMode(t_D13, OUTPUT);
+
+	/*
+	digitalWrite(LED_BUILTIN, HIGH);
+	delay(blinkRate);
+	digitalWrite(t_D13, LOW);
+	delay(blinkRate);
+	digitalWrite(t_D13, HIGH);
+	}*/
 }
 
 void loop(){
-	commandTokens[0] = t_GREEN;
-	Serial.println(commandTokens[0]);
-	if (commandTokens[0] == t_GREEN) {Serial.println("yes");}
 	showHelp();
 	showVersion();
 	if (getInput() > 0){
