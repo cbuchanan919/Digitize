@@ -81,7 +81,9 @@ char inDebugMode = t_EOL;	// if = t_DEBUG, shows more info in console.
 LedSettings d13;
 LedSettings led;
 
-
+/*
+ * first / initial function. Where all initialization is done.
+ * */
 void setup() {
 	Serial.begin(9600);
 	while (!Serial){ /*wait*/}
@@ -106,7 +108,9 @@ void setup() {
 	led.ledSetting = t_BLINK;
 }
 
-
+/*
+ * second / looping function. This is the main control method after setup runs. It loops over and over throughout the lifetime of the app.
+ * */
 void loop(){
 
 	if (getInput() > 0){
@@ -229,7 +233,9 @@ void parseInput(){
 
 
 /*
- * tries to get a command from a word. It goes through the lookup table and if a match is found, returns the token associated with the command.
+ * Tries to get a command from a word. It goes through the lookup table and if a match is found, returns the token associated with the command. 
+ * int start: starting index of the word.
+ * int end: last character of the word.
  * */
 char getCommandFromWord(int start, int end){
 	int wordLen = end - start;
@@ -251,7 +257,9 @@ char getCommandFromWord(int start, int end){
 	if (inDebugMode == t_DEBUG){ Serial.println("no command found"); }
 	return t_NO_COMMAND_FOUND;
 }
-
+/*
+ * Performs given command based on the logic in the switch tree.
+ * */
 void applyCommands(char newCmd[6]){
 	switch (newCmd[0]) {
 		case t_D13:
@@ -289,7 +297,6 @@ void applyCommands(char newCmd[6]){
 				default:
 					break;
 			}
-//			ledStatus(&led);
 			break;
 		case t_SET:
 			switch (newCmd[1]){
@@ -470,11 +477,13 @@ void showHelp(){
 
 }
 
-
+/*
+ * Prints the version info to serial.
+ * */
 void showVersion(){
-	Serial.print("\r\nThe current version of this app is: ");
+	Serial.print("\r\n\r\nThe current version of this app is: ");
 	Serial.print(appVersion);
-	Serial.print("\r\n");
+	Serial.println("\r\nIt was written by Chris Buchanan\r\n\r\n");
 }
 
 
