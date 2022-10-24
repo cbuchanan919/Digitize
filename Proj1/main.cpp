@@ -4,9 +4,10 @@
 #define t_OFF 0
 #define t_ON 1
 #define t_LED 2
+#define t_LEDS 3
 
-#define t_GREEN 4
-#define t_RED 5
+#define t_GREEN 7
+#define t_RED 8
 
 #define t_SET 9
 #define t_BLINK 10
@@ -25,6 +26,7 @@
 struct ledSettings {
 	char ledName;			// t_led, t_d13
 	char ledPin; 			// t_green, t_red, t_D13
+	char ledLastPin = t_EOL;	// t_green, t_red, t_D13
 	char ledSetting;		// t_on, t_off, t_blink
 	char ledState;			// used for blink: HIGH, LOW
 	unsigned int  blinkRate = 500;		// how fast to blink in ms
@@ -52,6 +54,7 @@ const char lookupTable[] = {
 	'o', 'f', '3', t_OFF, 
 	'o', 'n', '2', t_ON, 
 	'l', 'e', '3', t_LED,
+	'l', 'e', '4', t_LEDS,
 	'g', 'r', '5', t_GREEN,
 	'r', 'e', '3', t_RED,
 	's', 'e', '3', t_SET,
@@ -83,6 +86,7 @@ void setup() {
 	Serial.begin(9600);
 	while (!Serial){ /*wait*/}
 	Serial.setTimeout(500);
+	Serial.println("Info: Type 'help' for command options.");
 
 
 	// d13
@@ -92,26 +96,24 @@ void setup() {
 
 	// led
 	led.ledName = t_LED;
-	led.ledPin = t_GREEN;
+	led.ledPin = t_RED;
 
 
 	// initialize pins (leds) as outputs.
 	pinMode(t_D13, OUTPUT);		// built in LED
+	pinMode(t_RED, OUTPUT);		// green led
+	pinMode(t_GREEN, OUTPUT);	// red led
+	led.ledSetting = t_BLINK;
 }
 
 
 void loop(){
-	//	showHelp();
-	//	showVersion();
+
 	if (getInput() > 0){
 		parseInput();
-		//		ledStatus(&d13);
-		//		ledStatus(&led);
-		//		getCommandFromWord(0,2);
-
-
 	}
 	ledControl(&d13);
+	ledControl(&led);
 }
 
 
@@ -133,11 +135,12 @@ void clearInput() {
 int getInput(){
 	int cont = 1;
 	int addChar = 1;
+	if (inputIndex < 0) {inputIndex = 0;}
 	if (Serial){
 		if (commandEntered == 1){
 			clearInput();
 			commandEntered = 0;
-			Serial.println("\r\nPlease enter command: ");
+			Serial.println("\r\nPlease enter command:");
 		}
 		if (Serial.available() > 0){
 			addChar = 1;
@@ -208,6 +211,10 @@ void parseInput(){
 			}
 
 		}
+	} 
+	if (cmdIndex == 0) {
+		// no command recognised
+		Serial.print(" (Command not recognised)\r\n");
 	}
 	if (inDebugMode == t_DEBUG){
 		Serial.print("\r\nI found ");
@@ -229,8 +236,8 @@ char getCommandFromWord(int start, int end){
 	int lookupLen = sizeof(lookupTable)/sizeof(lookupTable[0]);
 	if (wordLen >= 2) { 
 		for (int i = 0; i < lookupLen; i+= 4){
-			if (lookupTable[i] == input[start]){
-				if (lookupTable[i + 1] == input[start + 1]) {
+			if (lookupTable[i] == tolower(input[start])){
+				if (lookupTable[i + 1] == tolower(input[start + 1])) {
 					int lookupLen = lookupTable[i + 2] - '0';
 					if (lookupLen == wordLen){
 						return lookupTable[i + 3]; 
@@ -246,15 +253,61 @@ char getCommandFromWord(int start, int end){
 }
 
 void applyCommands(char newCmd[6]){
-	int badDefault = 0;
 	switch (newCmd[0]) {
+		case t_D13:
+			switch (newCmd[1]){
+				case t_ON:
+					d13.ledSetting = t_ON;
+					break;
+				case t_OFF:
+					d13.ledSetting = t_OFF;
+					break;
+				case t_BLINK:
+					d13.ledSetting = t_BLINK;
+					break;
+				default:
+					break;
+			}
+			break;
+		case t_LED:
+			led.ledLastPin = led.ledPin;
+			switch (newCmd[1]){
+				case t_GREEN:
+					led.ledSetting = t_ON;
+					led.ledPin = t_GREEN;
+					break;
+				case t_RED:
+					led.ledSetting = t_ON;
+					led.ledPin = t_RED;
+					break;
+				case t_OFF:
+					led.ledSetting = t_OFF;
+					break;
+				case t_BLINK:
+					led.ledSetting = t_BLINK;
+					break;
+				default:
+					break;
+			}
+//			ledStatus(&led);
+			break;
+		case t_SET:
+			switch (newCmd[1]){
+				case t_BLINK:
+					Serial.println("setting blink not implemented yet :(");
+					break;
+				default:
+					break;
+			}
+			break;
+
 		case t_DEBUG:
 			if (newCmd[1] == t_ON) {
 				inDebugMode = t_DEBUG;
-				Serial.println("debug mode on");
-			} else {
+				Serial.println("\r\ndebug mode on");
+			} else if (newCmd[1] == t_OFF) {
 				inDebugMode = t_EOL;
-				Serial.println("debug mode off");
+				Serial.println("\r\ndebug mode off");
 			}
 			break;
 		case t_HELP:
@@ -263,9 +316,15 @@ void applyCommands(char newCmd[6]){
 		case t_VERSION:
 			showVersion();
 			break;
+		case t_STATUS:
+			if (newCmd[1] == t_LEDS){
+				ledStatus(&led);
+				ledStatus(&d13);
+			}
+			break;
 		default:
 			// do nothing
-			badDefault = 0;
+			break;
 	}
 }
 
@@ -296,22 +355,38 @@ int getNumber(char *input, int size){
 }
 
 
+/*
+ * controls the blinking / status of the led.
+ * */
 void ledControl(LedSettings *led){
-	if (led->ledSetting == t_BLINK){
-		int currentMillis = millis();
-		if (currentMillis - led->previousMillis >= led->blinkRate){
-			led->previousMillis = currentMillis;
-			if (led->ledState == HIGH) {
-				led->ledState = LOW;
-			} else {
+	int currentMillis = millis();
+	if (currentMillis - led->previousMillis >= led->blinkRate){
+		led->previousMillis = currentMillis;
+		switch (led->ledSetting) {
+
+			case t_BLINK:
+				if (led->ledState == HIGH) {
+					led->ledState = LOW;
+				} else {
+					led->ledState = HIGH;
+				}
+
+				break;
+			case t_ON:
 				led->ledState = HIGH;
-			}
+				break;
+			case t_OFF:
+				led->ledState = LOW;
+				break;
+			default:
+				break;
 		}
 
 
-	}
-	digitalWrite(led->ledPin, led->ledState);
+		digitalWrite(led->ledLastPin, LOW);
+		digitalWrite(led->ledPin, led->ledState);
 
+	}
 }
 
 
@@ -368,12 +443,29 @@ void showHelp(){
 	Serial.print("\r\nShowing help for Arduino Project 1, Version ");
 	Serial.print(appVersion);
 	Serial.print(". \r\n");
-	Serial.println("Here are some of the commands that can be entered: ");
+
+	Serial.println("\r\nHere are some of the commands that can be entered: \r\n");
+	
+	Serial.println("\td13 on - turns on the onboard led.");
+	Serial.println("\td13 off - turns off the onboard led.");
+	Serial.println("\td13 blink - blinks the onboard led every <x> interval.\r\n");
+
+	Serial.println("\tled green - turns on the green led.");
+	Serial.println("\tled red - turns on the red led.");
+	Serial.println("\tled off - turns off both the green & red led.");
+	Serial.println("\tled blink - blinks which ever color of led that was last turned on.\r\n");
+
+	Serial.println("\tset blink <number> - ie. set blink 500 - This will set the interval for both the onboard led and the red/green led's.\r\n");
 
 	Serial.println("\tdebug on - Turns on debug mode. This shows more debug info");
 	Serial.println("\tdebug off - Turns off debug mode.\r\n");
 
+	Serial.println("\thelp - displays this help info.\r\n");
+	Serial.println("\tversion - displays app version.\r\n");
 
+	Serial.println("\tstatus leds - displays current status for each of the led's.\r\n");
+
+	Serial.println("\r\n\r\n\tNote: commands are not case sensitive.\r\n");
 
 
 }
