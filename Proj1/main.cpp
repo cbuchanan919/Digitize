@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Scheduler.h>
+//#include <Scheduler.h>
 
 // Define section: 
 #define t_OFF 0
@@ -20,65 +20,86 @@
 // ---------------
 
 
+// led settings
+struct ledSettings {
+	char ledName;			// t_led, t_d13
+	char ledPin; 			// t_green, t_red, t_D13
+	char ledSetting;		// t_on, t_off, t_blink
+	char ledState;			// used for blink: HIGH, LOW
+	int  blinkRate = 500;		// how fast to blink in ms
+	unsigned long previousMillis = 0; // used to store last blink time
+}; 
+typedef struct ledSettings LedSettings;
+
+
 // function headers
 void clearInput();
 int getInput();
 void printInputDetails();
 void parseInput();
+void ledStatus(LedSettings *led);
+void ledControl(LedSettings *led);
 void showHelp();
 void showVersion();
 // ----------------
 
 
 
-// led settings
-char ledColor; 		// t_green, t_red
-char ledStatus;		// t_on, t_off, t_blink
-const int blinkRate = 500;	// how fast to blink in ms
-
-const char lookupTable[] = {'o', 'f', 3, t_OFF, 
-			    'o', 'n', 2, t_ON, 
-			    'l', 'e', 3, t_LED,
-			    'g', 'r', 5, t_GREEN,
-			    'r', 'e', 3, t_RED,
-			    's', 'e', 3, t_SET,
-			    'b', 'l', 5, t_BLINK,
-			    'd', '1', 3, t_D13,
-			    's', 't', 6, t_STATUS,
-			    'v', 'e', 7, t_VERSION,
-			    'h', 'e', 4, t_HELP
-			   };
+const char lookupTable[] = {
+	'o', 'f', 3, t_OFF, 
+	'o', 'n', 2, t_ON, 
+	'l', 'e', 3, t_LED,
+	'g', 'r', 5, t_GREEN,
+	'r', 'e', 3, t_RED,
+	's', 'e', 3, t_SET,
+	'b', 'l', 5, t_BLINK,
+	'd', '1', 3, t_D13,
+	's', 't', 6, t_STATUS,
+	'v', 'e', 7, t_VERSION,
+	'h', 'e', 4, t_HELP
+};
 
 const float appVersion = 0.01;
 const int maxLen = 25;
 const char nums[] = "0123456789"; 
-char input[maxLen + 1]; // used to parse input from serial
+char input[maxLen + 1]; 	// used to parse input from serial
+int inputIndex = 0; 		// used to store current index of input.
 char commandTokens[maxLen + 1];
+int commandEntered = 1;
+
+LedSettings d13;
+LedSettings led;
 
 
 void setup() {
 	Serial.begin(9600);
-	Serial.setTimeout(10000);
 	while (!Serial){ /*wait*/}
+	Serial.setTimeout(500);
+
+	// d13
+	d13.ledName = t_D13;
+	d13.ledPin = t_D13;
+	d13.ledSetting = t_BLINK;
+
+	// led
+	led.ledName = t_LED;
+	led.ledPin = t_GREEN;
+
 
 	// initialize pins (leds) as outputs.
-	pinMode(t_D13, OUTPUT);
-
-	/*
-	digitalWrite(LED_BUILTIN, HIGH);
-	delay(blinkRate);
-	digitalWrite(t_D13, LOW);
-	delay(blinkRate);
-	digitalWrite(t_D13, HIGH);
-	}*/
+	pinMode(t_D13, OUTPUT);		// built in LED
 }
 
 void loop(){
-	showHelp();
-	showVersion();
+	//	showHelp();
+	//	showVersion();
 	if (getInput() > 0){
 		parseInput();
+		ledStatus(&d13);
+		ledStatus(&led);
+
 	}
+	ledControl(&d13);
 }
 
 
@@ -90,55 +111,64 @@ void clearInput() {
 
 
 /*
- * This gets input from the console. It reads till the return key is pressed, or the max characters reached. 
- * It will write to the input variable (array).
+ * This gets an input charcter from the console. It returns 0 till the return key is pressed, or the max characters reached. Then it returns 1.
+ * It will write current character to the input variable (array).
  */
 int getInput(){
-	clearInput();
-	int index = 0;
 	int cont = 1;
 	int addChar = 1;
 	if (Serial){
-		Serial.println("Please enter command: ");
-		while (cont == 1) {
-			if (Serial.available() > 0){
-				addChar = 1;
-				char check = Serial.read();
-				if (check == 32 && input[index - 1] == 32) { /*No double spaces*/ addChar = 0; }
-				if (index >= maxLen) { /* max input reached */ cont = 0; }
-				if (check == 13){ /* Return key entered */ cont = 0; }
-				if (check == 8 || check == 127) {
-					// backspace & delete
-					addChar = 0;
+		if (commandEntered == 1){
+			clearInput();
+			commandEntered = 0;
+			Serial.println("Please enter command: ");
+		}
+		if (Serial.available() > 0){
+			addChar = 1;
+			char check = Serial.read();
+			if (check == 32 && input[inputIndex - 1] == 32) { /*No double spaces*/ addChar = 0; }
+			if (inputIndex >= maxLen) { /* max input reached */ cont = 0; }
+			if (check == 13){ 
+				/* Return key entered */ 
+				cont = 0; 
+				commandEntered = 1;
+			}
+			if (check == 8 || check == 127) {
+				// backspace & delete
+				addChar = 0;
 
-					index--;
-					input[index] = '\0';
+				inputIndex--;
+				input[inputIndex] = '\0';
 
-					// print new line
-					Serial.println();
-					Serial.print(input);
-				}
+				// print new line
+				Serial.println();
+				Serial.print(input);
+			}
 
-				if (cont == 1 && addChar == 1) { 
-					input[index] = check; 
-					Serial.print(check);
-					index++;
-				}
+			if (cont == 1 && addChar == 1) { 
+				input[inputIndex] = check; 
+				Serial.print(check);
+				inputIndex++;
 			}
 		}
-		input[index] = '\0';
-		Serial.println("\r\nYou Wrote: ");
-		Serial.println(input);
-		Serial.println();
+		if (commandEntered == 1){
+			input[inputIndex] = '\0';
+			Serial.println("\r\nYou Wrote: ");
+			Serial.println(input);
+			Serial.println();
+		}
 		//printInputDetails();
 	}
-	return index;
+	return commandEntered;
 }
 
 void parseInput(){
 
 }
 
+void applyCommands(char newCmd[4]){
+
+}
 /*
  * This just prints out the details of each character in input. 
  * It iterates through each character of input and prints out the position followed by the value.
@@ -164,6 +194,68 @@ int getNumber(char *input, int size){
 	return -1;	
 }
 
+void ledControl(LedSettings *led){
+	if (led->ledSetting == t_BLINK){
+		int currentMillis = millis();
+		if (currentMillis - led->previousMillis >= led->blinkRate){
+			led->previousMillis = currentMillis;
+			if (led->ledState == HIGH) {
+				led->ledState = LOW;
+			} else {
+				led->ledState = HIGH;
+			}
+		}
+
+
+	}
+	digitalWrite(led->ledPin, led->ledState);
+
+}
+
+/*
+ * Prints to serial the status of the referenced led.
+ *
+ * */
+void ledStatus(LedSettings *led){
+	Serial.print("\r\nPrinting led status for: ");
+	switch (led->ledName) {
+		case t_D13:
+			Serial.print("D13");
+			break;
+		case t_LED:
+			Serial.print("LED");
+			break;
+		default:
+			Serial.print("an led");
+	}
+	Serial.print(". \r\n");
+
+	if (led->ledSetting == t_BLINK){
+		Serial.print("It is set to blink every ");
+		Serial.print(led->blinkRate);
+		Serial.print(" ms.\r\n");
+	} else {
+		Serial.print("It is turned ");
+		if (led->ledSetting == t_ON) { 
+			Serial.print(" on.\r\n"); }
+		else {
+			Serial.print(" off.\r\n"); }
+	}
+	Serial.print("The color is ");
+	switch (led->ledPin){
+		case t_GREEN:
+			Serial.print("green");
+			break;
+		case t_RED:
+			Serial.print("red");
+			break;
+		default:
+			Serial.print("white");
+	}
+	Serial.print(".\r\n");
+
+}
+
 /*
  * This prints a help menu of available commands.
  *
@@ -172,7 +264,7 @@ void showHelp(){
 	Serial.print("Showing help for Arduino Project 1, Version ");
 	Serial.print(appVersion);
 	Serial.print(". ");
-	
+
 	Serial.println();
 
 }
@@ -182,3 +274,6 @@ void showVersion(){
 	Serial.print(appVersion);
 	Serial.print("\r\n");
 }
+
+
+
