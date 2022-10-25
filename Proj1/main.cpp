@@ -5,6 +5,7 @@
 #define t_ON 1
 #define t_LED 2
 #define t_LEDS 3
+#define t_ALT 4
 
 #define t_GREEN 7
 #define t_RED 8
@@ -27,7 +28,7 @@ struct ledSettings {
 	char ledName;			// t_led, t_d13
 	char ledPin; 			// t_green, t_red, t_D13
 	char ledLastPin = t_EOL;	// t_green, t_red, t_D13
-	char ledSetting;		// t_on, t_off, t_blink
+	char ledSetting;		// t_on, t_off, t_blink, t_alt
 	char ledState;			// used for blink: HIGH, LOW
 	unsigned int  blinkRate = 500;		// how fast to blink in ms
 	unsigned long previousMillis = 0; // used to store last blink time
@@ -40,9 +41,9 @@ void clearInput();
 int getInput();
 void printInputDetails();
 void parseInput();
-char getCommandFromWord(int start, int end);
-int getNumber(int start, int end);
-void applyCommands(char newCmd[6]);
+unsigned char getCommandFromWord(int start, int end);
+unsigned int getNumber(int start, int end);
+void applyCommands(unsigned char newCmd[6]);
 void ledStatus(LedSettings *led);
 void ledControl(LedSettings *led);
 void showHelp();
@@ -56,6 +57,7 @@ const char lookupTable[] = {
 	'o', 'n', '2', t_ON, 
 	'l', 'e', '3', t_LED,
 	'l', 'e', '4', t_LEDS,
+	'a', 'l', '3', t_ALT,
 	'g', 'r', '5', t_GREEN,
 	'r', 'e', '3', t_RED,
 	's', 'e', '3', t_SET,
@@ -68,20 +70,18 @@ const char lookupTable[] = {
 };
 
 
-const float appVersion = 0.102;
-const char nums[] = "0123456789"; 
+const float appVersion = 1.01; 
 const int maxLen = 25;
 
 char input[maxLen + 1]; 	// used to parse input from serial
 int inputIndex = 0; 		// used to store current index of input.
 
-//char commandTokens[maxLen + 1];
 int commandEntered = 1;
 
 char inDebugMode = t_EOL;	// if = t_DEBUG, shows more info in console.
 
-LedSettings d13;
-LedSettings led;
+LedSettings d13;		// onboard (pin 13) led settings
+LedSettings led;		// 2 color led settings
 
 /*
  * first / initial function. Where all initialization is done.
@@ -197,9 +197,9 @@ int getInput(){
 void parseInput(){
 	int start = 0;
 	int end = 0;
-	char commands[6];
+	unsigned char commands[6];
 	int cmdIndex = 0;
-	char noCmd = t_NO_COMMAND_FOUND;
+	unsigned char noCmd = t_NO_COMMAND_FOUND;
 	for (int i = 0; i < maxLen; i++) {
 		if (input[i] == '\0') { 
 			i = maxLen; 
@@ -207,27 +207,29 @@ void parseInput(){
 			if (input[i + 1] == 32 || input[i + 1] == '\0') {
 				// next char is space or end of input. end word
 				end = i+1;
-				char cmd = getCommandFromWord(start, end);
+				unsigned char cmd = getCommandFromWord(start, end);
 				if (cmd == noCmd) {
 					// no command match found. check for int
 					if (cmdIndex > 1 && commands[cmdIndex - 2] == t_SET && commands[cmdIndex - 1] == t_BLINK){
 						// set blink. check for number
-						int num = getNumber(start, end);
+						unsigned int num = getNumber(start, end);
 						if (inDebugMode == t_DEBUG){
 							Serial.print("\r\nNumber: ");
 							Serial.print(num);
 						}
-						if (num > -1){
+						if (num > 0){
 							// number found
 							if (num < 256){
-								commands[cmdIndex] = num;
+								commands[cmdIndex] = (unsigned char)num;
 								cmdIndex++;
 							} else {
-								// converting int to 2 bytes...
+								// convert int to 2 bytes...
 								commands[cmdIndex] = t_WORD;
 								cmdIndex++;
-
-
+								commands[cmdIndex] = (num >> 8) & 0xFF;
+								cmdIndex++;
+								commands[cmdIndex] = (num >> 0) & 0xFF;
+								cmdIndex++;
 							}
 						}
 							
@@ -267,7 +269,7 @@ void parseInput(){
  * int start: starting index of the word.
  * int end: last character of the word.
  * */
-char getCommandFromWord(int start, int end){
+unsigned char getCommandFromWord(int start, int end){
 	int wordLen = end - start;
 	int lookupLen = sizeof(lookupTable)/sizeof(lookupTable[0]);
 	if (wordLen >= 2) { 
@@ -289,15 +291,15 @@ char getCommandFromWord(int start, int end){
 }
 
 /*
- * Returns an integer from the given location in the input string if found. Else returns -1.
+ * Returns an integer from the given location in the input string if found. Else returns 0.
  * */
-int getNumber(int start, int end){
-	int result = 0;
+unsigned int getNumber(int start, int end){
+	unsigned int result = 0;
 	char check;
 	for (int i = start; i < end; i++){
 		check = input[i];
 		if (check > '9' || check < '0') {
-			return -1; // some error occured.
+			return 0; // some error occured.
 		}
 		result = (result*10) + check - '0';
 	}
@@ -308,7 +310,7 @@ int getNumber(int start, int end){
 /*
  * Performs given command based on the logic in the switch tree.
  * */
-void applyCommands(char newCmd[6]){
+void applyCommands(unsigned char newCmd[6]){
 	switch (newCmd[0]) {
 		case t_D13:
 			switch (newCmd[1]){
@@ -342,6 +344,12 @@ void applyCommands(char newCmd[6]){
 				case t_BLINK:
 					led.ledSetting = t_BLINK;
 					break;
+				case t_ALT:
+					led.ledSetting = t_ALT;
+					led.ledLastPin = t_RED;
+					led.ledPin = t_GREEN;
+					led.ledState = HIGH;
+					break;
 				default:
 					break;
 			}
@@ -349,17 +357,28 @@ void applyCommands(char newCmd[6]){
 		case t_SET:
 			switch (newCmd[1]){
 				case t_BLINK:
+					{
+					unsigned int blinkRate = 0;
 					switch (newCmd[2]){
 						case t_WORD:
+								blinkRate = (newCmd[3] << 8) + newCmd[4];
 							break;
 						case t_EOL:
 							// badly implemented.
 							break;
 						default:
 							unsigned char c = newCmd[2];
-							led.blinkRate = c;
-							d13.blinkRate = c;	
-							break;
+							blinkRate = (unsigned int)c;
+						break;
+					}
+					if (inDebugMode == t_DEBUG){
+						Serial.print("The converted int: ");
+						Serial.print(blinkRate);
+					}
+					if (blinkRate > 0){
+						led.blinkRate = blinkRate;
+						d13.blinkRate = blinkRate;	
+					}
 					}
 					break;
 				default:
@@ -420,7 +439,13 @@ void ledControl(LedSettings *led){
 	if (currentMillis - led->previousMillis >= led->blinkRate){
 		led->previousMillis = currentMillis;
 		switch (led->ledSetting) {
-
+			case t_ALT:
+				{
+				char tmpPrev = led->ledLastPin;
+				led->ledLastPin = led->ledPin;
+				led->ledPin = tmpPrev;
+				}
+				break;
 			case t_BLINK:
 				if (led->ledState == HIGH) {
 					led->ledState = LOW;
@@ -469,6 +494,10 @@ void ledStatus(LedSettings *led){
 		Serial.print("It is set to blink every ");
 		Serial.print(led->blinkRate);
 		Serial.print(" ms.\r\n");
+	} else if (led->ledSetting == t_ALT){
+		Serial.print("It is set to alternate colors every ");
+		Serial.print(led->blinkRate);
+		Serial.print(" ms.\r\n");
 	} else {
 		Serial.print("It is turned ");
 		if (led->ledSetting == t_ON) { 
@@ -510,7 +539,8 @@ void showHelp(){
 	Serial.println("\tled green - turns on the green led.");
 	Serial.println("\tled red - turns on the red led.");
 	Serial.println("\tled off - turns off both the green & red led.");
-	Serial.println("\tled blink - blinks which ever color of led that was last turned on.\r\n");
+	Serial.println("\tled blink - blinks which ever color of led that was last turned on.");
+	Serial.println("\tled alt - alternates colors every <x> interval.\r\n");
 
 	Serial.println("\tset blink <number> - ie. set blink 500 - This will set the interval for both the onboard led and the red/green led's.\r\n");
 
