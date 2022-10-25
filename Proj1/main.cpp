@@ -1,77 +1,27 @@
 #include <Arduino.h>
-
-// Define section: 
-#define t_OFF 0
-#define t_ON 1
-#define t_LED 2
-#define t_LEDS 3
-#define t_ALT 4
-
-#define t_GREEN 7
-#define t_RED 8
-
-#define t_SET 9
-#define t_BLINK 10
-#define t_D13 13
-#define t_WORD 14
-#define t_STATUS 15
-#define t_VERSION 16
-#define t_HELP 17
-#define t_DEBUG 50
-#define t_NO_COMMAND_FOUND 254
-#define t_EOL 255
-// ---------------
-
-
-// led settings
-struct ledSettings {
-	char ledName;			// t_led, t_d13
-	char ledPin; 			// t_green, t_red, t_D13
-	char ledLastPin = t_EOL;	// t_green, t_red, t_D13
-	char ledSetting;		// t_on, t_off, t_blink, t_alt
-	char ledState;			// used for blink: HIGH, LOW
-	unsigned int  blinkRate = 500;		// how fast to blink in ms
-	unsigned long previousMillis = 0; // used to store last blink time
-}; 
-typedef struct ledSettings LedSettings;
+#include <consts.h>
+#include <structs.h>
+#include <SerialOutput.h>
 
 
 // function headers
 void clearInput();
 int getInput();
-void printInputDetails();
+//void showInputDetails();
+void showInputDetails(char *inputArr, int maxLength);
 void parseInput();
 unsigned char getCommandFromWord(int start, int end);
 unsigned int getNumber(int start, int end);
 void applyCommands(unsigned char newCmd[6]);
-void ledStatus(LedSettings *led);
-void ledControl(LedSettings *led);
+void showLedStatus(LedSettings *led);
+void ledControl(LedSettings *led, char overrides);
 void showHelp();
-void showVersion();
+void showVersion(float version);
 // ----------------
 
 
 
-const char lookupTable[] = {
-	'o', 'f', '3', t_OFF, 
-	'o', 'n', '2', t_ON, 
-	'l', 'e', '3', t_LED,
-	'l', 'e', '4', t_LEDS,
-	'a', 'l', '3', t_ALT,
-	'g', 'r', '5', t_GREEN,
-	'r', 'e', '3', t_RED,
-	's', 'e', '3', t_SET,
-	'b', 'l', '5', t_BLINK,
-	'd', '1', '3', t_D13,
-	's', 't', '6', t_STATUS,
-	'v', 'e', '7', t_VERSION,
-	'h', 'e', '4', t_HELP,
-	'd', 'e', '5', t_DEBUG
-};
 
-
-const float appVersion = 1.01; 
-const int maxLen = 25;
 
 char input[maxLen + 1]; 	// used to parse input from serial
 int inputIndex = 0; 		// used to store current index of input.
@@ -118,8 +68,8 @@ void loop(){
 	if (getInput() > 0){
 		parseInput();
 	}
-	ledControl(&d13);
-	ledControl(&led);
+	ledControl(&d13, t_EOL);
+	ledControl(&led, t_EOL);
 }
 
 
@@ -161,13 +111,21 @@ int getInput(){
 			if (check == 8 || check == 127) {
 				// backspace & delete
 				addChar = 0;
-
-				inputIndex--;
+									
+				// print new line
+				if (input[0] != '\0'){
+					Serial.print("<<");
+					Serial.println();
+				}
+				
+				if (inputIndex > 0) { inputIndex--; }
 				input[inputIndex] = '\0';
 
-				// print new line
-				Serial.println();
-				Serial.print(input);
+				if (input[0] != '\0'){
+					Serial.print(input);
+				}
+				
+				
 			}
 
 			if (cont == 1 && addChar == 1) { 
@@ -182,9 +140,11 @@ int getInput(){
 			if (inDebugMode == t_DEBUG){
 				Serial.println("\r\nYou Wrote: ");
 				Serial.println(input);
+				Serial.println('\r\n');
+				Serial.print("InputIndex: ");
+				Serial.print(inputIndex);
 				Serial.println();
-
-				printInputDetails();
+				showInputDetails(&input[0], maxLen);
 			}
 		}
 	}
@@ -328,14 +288,15 @@ void applyCommands(unsigned char newCmd[6]){
 			}
 			break;
 		case t_LED:
-			led.ledLastPin = led.ledPin;
 			switch (newCmd[1]){
 				case t_GREEN:
 					led.ledSetting = t_ON;
+					led.ledLastPin = led.ledPin;
 					led.ledPin = t_GREEN;
 					break;
 				case t_RED:
 					led.ledSetting = t_ON;
+					led.ledLastPin = led.ledPin;
 					led.ledPin = t_RED;
 					break;
 				case t_OFF:
@@ -399,44 +360,31 @@ void applyCommands(unsigned char newCmd[6]){
 			showHelp();
 			break;
 		case t_VERSION:
-			showVersion();
+			showVersion(appVersion);
 			break;
 		case t_STATUS:
 			if (newCmd[1] == t_LEDS){
-				ledStatus(&led);
-				ledStatus(&d13);
+				showLedStatus(&led);
+				showLedStatus(&d13);
 			}
 			break;
 		default:
 			// do nothing
 			break;
 	}
-}
-
-/*
- * This just prints out the details of each character in input. 
- * It iterates through each character of input and prints out the position followed by the value.
- */
-void printInputDetails() {
-	Serial.println("Printing Input Details: ");
-	for (int i = 0; i < maxLen + 1; i++){
-		Serial.print(i);
-		Serial.print(" - ");
-		if (input[i] == '\0'){
-			Serial.println("null");
-		} else {
-			Serial.println(input[i]);
-		}
-	}
+	// force check of validity of the led's
+	ledControl(&led, t_ON);
+	ledControl(&d13, t_ON);
 }
 
 
+
 /*
- * controls the blinking / status of the led.
+ * controls the blinking / status of the given led. Setting override to t_on will force the check.
  * */
-void ledControl(LedSettings *led){
+void ledControl(LedSettings *led, char override){
 	int currentMillis = millis();
-	if (currentMillis - led->previousMillis >= led->blinkRate){
+	if (currentMillis - led->previousMillis >= led->blinkRate || override == t_ON){
 		led->previousMillis = currentMillis;
 		switch (led->ledSetting) {
 			case t_ALT:
@@ -470,101 +418,4 @@ void ledControl(LedSettings *led){
 
 	}
 }
-
-
-/*
- * Prints to serial the status of the referenced led.
- *
- * */
-void ledStatus(LedSettings *led){
-	Serial.print("\r\nPrinting led status for: ");
-	switch (led->ledName) {
-		case t_D13:
-			Serial.print("D13");
-			break;
-		case t_LED:
-			Serial.print("LED");
-			break;
-		default:
-			Serial.print("an led");
-	}
-	Serial.print(". \r\n");
-
-	if (led->ledSetting == t_BLINK){
-		Serial.print("It is set to blink every ");
-		Serial.print(led->blinkRate);
-		Serial.print(" ms.\r\n");
-	} else if (led->ledSetting == t_ALT){
-		Serial.print("It is set to alternate colors every ");
-		Serial.print(led->blinkRate);
-		Serial.print(" ms.\r\n");
-	} else {
-		Serial.print("It is turned ");
-		if (led->ledSetting == t_ON) { 
-			Serial.print("on.\r\n"); }
-		else {
-			Serial.print("off.\r\n"); }
-	}
-	Serial.print("The color is ");
-	switch (led->ledPin){
-		case t_GREEN:
-			Serial.print("green");
-			break;
-		case t_RED:
-			Serial.print("red");
-			break;
-		default:
-			Serial.print("white");
-	}
-	Serial.print(".\r\n");
-
-}
-
-
-/*
- * This prints a help menu of available commands. Note: this method has at least 700-800 bytes of memory used. Shrinking / reducing it may be necessary.
- *
- * */
-void showHelp(){
-	Serial.print("\r\nShowing help for Arduino Project 1, Version ");
-	Serial.print(appVersion);
-	Serial.print(". \r\n");
-
-	Serial.println("\r\nHere are some of the commands that can be entered: \r\n");
-	
-	Serial.println("\td13 on - turns on the onboard led.");
-	Serial.println("\td13 off - turns off the onboard led.");
-	Serial.println("\td13 blink - blinks the onboard led every <x> interval.\r\n");
-
-	Serial.println("\tled green - turns on the green led.");
-	Serial.println("\tled red - turns on the red led.");
-	Serial.println("\tled off - turns off both the green & red led.");
-	Serial.println("\tled blink - blinks which ever color of led that was last turned on.");
-	Serial.println("\tled alt - alternates colors every <x> interval.\r\n");
-
-	Serial.println("\tset blink <number> - ie. set blink 500 - This will set the interval for both the onboard led and the red/green led's.\r\n");
-
-	Serial.println("\tdebug on - Turns on debug mode. This shows more debug info");
-	Serial.println("\tdebug off - Turns off debug mode.\r\n");
-
-	Serial.println("\thelp - displays this help info.\r\n");
-	Serial.println("\tversion - displays app version.\r\n");
-
-	Serial.println("\tstatus leds - displays current status for each of the led's.\r\n");
-
-	Serial.println("\r\n\r\n\tNote: commands are not case sensitive.\r\n");
-
-
-}
-
-/*
- * Prints the version info to serial.
- * */
-void showVersion(){
-	Serial.print("\r\n\r\nThe current version of this app is: ");
-	Serial.print(appVersion);
-	Serial.println("\r\nIt was written by Chris Buchanan\r\n\r\n");
-}
-
-
 
