@@ -41,6 +41,7 @@ int getInput();
 void printInputDetails();
 void parseInput();
 char getCommandFromWord(int start, int end);
+int getNumber(int start, int end);
 void applyCommands(char newCmd[6]);
 void ledStatus(LedSettings *led);
 void ledControl(LedSettings *led);
@@ -67,17 +68,18 @@ const char lookupTable[] = {
 };
 
 
-const float appVersion = 0.01;
+const float appVersion = 0.102;
 const char nums[] = "0123456789"; 
 const int maxLen = 25;
 
 char input[maxLen + 1]; 	// used to parse input from serial
 int inputIndex = 0; 		// used to store current index of input.
 
-char commandTokens[maxLen + 1];
+//char commandTokens[maxLen + 1];
 int commandEntered = 1;
 
 char inDebugMode = t_EOL;	// if = t_DEBUG, shows more info in console.
+
 LedSettings d13;
 LedSettings led;
 
@@ -99,13 +101,13 @@ void setup() {
 	// led
 	led.ledName = t_LED;
 	led.ledPin = t_RED;
+	led.ledSetting = t_BLINK;
 
 
 	// initialize pins (leds) as outputs.
 	pinMode(t_D13, OUTPUT);		// built in LED
 	pinMode(t_RED, OUTPUT);		// green led
 	pinMode(t_GREEN, OUTPUT);	// red led
-	led.ledSetting = t_BLINK;
 }
 
 /*
@@ -189,7 +191,9 @@ int getInput(){
 	return commandEntered;
 }
 
-
+/*
+ *
+ * */
 void parseInput(){
 	int start = 0;
 	int end = 0;
@@ -204,7 +208,33 @@ void parseInput(){
 				// next char is space or end of input. end word
 				end = i+1;
 				char cmd = getCommandFromWord(start, end);
-				if (cmd != noCmd) {
+				if (cmd == noCmd) {
+					// no command match found. check for int
+					if (cmdIndex > 1 && commands[cmdIndex - 2] == t_SET && commands[cmdIndex - 1] == t_BLINK){
+						// set blink. check for number
+						int num = getNumber(start, end);
+						if (inDebugMode == t_DEBUG){
+							Serial.print("\r\nNumber: ");
+							Serial.print(num);
+						}
+						if (num > -1){
+							// number found
+							if (num < 256){
+								commands[cmdIndex] = num;
+								cmdIndex++;
+							} else {
+								// converting int to 2 bytes...
+								commands[cmdIndex] = t_WORD;
+								cmdIndex++;
+
+
+							}
+						}
+							
+					}
+
+				} else {
+					// command match found
 					commands[cmdIndex] = cmd;
 					cmdIndex++;
 				}
@@ -257,6 +287,24 @@ char getCommandFromWord(int start, int end){
 	if (inDebugMode == t_DEBUG){ Serial.println("no command found"); }
 	return t_NO_COMMAND_FOUND;
 }
+
+/*
+ * Returns an integer from the given location in the input string if found. Else returns -1.
+ * */
+int getNumber(int start, int end){
+	int result = 0;
+	char check;
+	for (int i = start; i < end; i++){
+		check = input[i];
+		if (check > '9' || check < '0') {
+			return -1; // some error occured.
+		}
+		result = (result*10) + check - '0';
+	}
+	return result;	
+}
+
+
 /*
  * Performs given command based on the logic in the switch tree.
  * */
@@ -301,7 +349,18 @@ void applyCommands(char newCmd[6]){
 		case t_SET:
 			switch (newCmd[1]){
 				case t_BLINK:
-					Serial.println("setting blink not implemented yet :(");
+					switch (newCmd[2]){
+						case t_WORD:
+							break;
+						case t_EOL:
+							// badly implemented.
+							break;
+						default:
+							unsigned char c = newCmd[2];
+							led.blinkRate = c;
+							d13.blinkRate = c;	
+							break;
+					}
 					break;
 				default:
 					break;
@@ -350,15 +409,6 @@ void printInputDetails() {
 			Serial.println(input[i]);
 		}
 	}
-}
-
-
-int getNumber(char *input, int size){
-	int result = 0;
-	for (int i = 0; i < size; i++){
-
-	}
-	return -1;	
 }
 
 
@@ -422,9 +472,9 @@ void ledStatus(LedSettings *led){
 	} else {
 		Serial.print("It is turned ");
 		if (led->ledSetting == t_ON) { 
-			Serial.print(" on.\r\n"); }
+			Serial.print("on.\r\n"); }
 		else {
-			Serial.print(" off.\r\n"); }
+			Serial.print("off.\r\n"); }
 	}
 	Serial.print("The color is ");
 	switch (led->ledPin){
@@ -443,7 +493,7 @@ void ledStatus(LedSettings *led){
 
 
 /*
- * This prints a help menu of available commands.
+ * This prints a help menu of available commands. Note: this method has at least 700-800 bytes of memory used. Shrinking / reducing it may be necessary.
  *
  * */
 void showHelp(){
