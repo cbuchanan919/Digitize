@@ -1,10 +1,10 @@
-
-/*
+/**
  * This just prints out the details of each character in input. 
  * It iterates through each character of input and prints out the position followed by the value.
  */
+/*
 void showInputDetails(char *inputArr, int maxLength) {
-	Serial.println("Printing Input Details: ");
+	Serial.println("Input Details: ");
 	for (int i = 0; i <= maxLength; i++){
 		Serial.print(i);
 		Serial.print(" - ");
@@ -15,15 +15,15 @@ void showInputDetails(char *inputArr, int maxLength) {
 		}
 	}
 }
+*/
 
 
-
-/*
- * Prints to serial the status of the referenced led.
- *
- * */
+/**
+ * Prints to serial the status of the referenced led. 
+ * It will display the following details: led name, blinking or solid, turned on or off, how fast it blinks.
+ */
 void showLedStatus(LedSettings *led){
-	Serial.print("\r\nPrinting led status for: ");
+	Serial.print("\r\nStatus for: ");
 	switch (led->ledName) {
 		case t_D13:
 			Serial.print("D13");
@@ -37,11 +37,11 @@ void showLedStatus(LedSettings *led){
 	Serial.print(". \r\n");
 
 	if (led->ledSetting == t_BLINK){
-		Serial.print("It is set to blink every ");
+		Serial.print("Blinks every ");
 		Serial.print(led->blinkRate);
 		Serial.print(" ms.\r\n");
 	} else if (led->ledSetting == t_ALT){
-		Serial.print("It is set to alternate colors every ");
+		Serial.print("Alternates colors every ");
 		Serial.print(led->blinkRate);
 		Serial.print(" ms.\r\n");
 	} else {
@@ -51,7 +51,7 @@ void showLedStatus(LedSettings *led){
 		else {
 			Serial.print("off.\r\n"); }
 	}
-	Serial.print("The color is ");
+	Serial.print("Color is ");
 	switch (led->ledPin){
 		case t_GREEN:
 			Serial.print("green");
@@ -66,46 +66,43 @@ void showLedStatus(LedSettings *led){
 
 }
 
-
-/*
- * This prints a help menu of available commands. Note: this method has at least 700-800 bytes of memory used. Shrinking / reducing it may be necessary.
- *
- * */
-void showHelp(){
-	Serial.print("\r\nShowing help for Arduino Project 1. \r\n");
-
-	Serial.println("\r\nHere are some of the commands that can be entered: \r\n");
 	
-	Serial.println("\td13 on - turns on the onboard led.");
-	Serial.println("\td13 off - turns off the onboard led.");
-	Serial.println("\td13 blink - blinks the onboard led every <x> interval.\r\n");
-
-	Serial.println("\tled green - turns on the green led.");
-	Serial.println("\tled red - turns on the red led.");
-	Serial.println("\tled off - turns off both the green & red led.");
-	Serial.println("\tled blink - blinks which ever color of led that was last turned on.");
-	Serial.println("\tled alt - alternates colors every <x> interval.\r\n");
-
-	Serial.println("\tset blink <number> - ie. set blink 500 - This will set the interval for both the onboard led and the red/green led's.\r\n");
-
-	Serial.println("\tdebug on - Turns on debug mode. This shows more debug info");
-	Serial.println("\tdebug off - Turns off debug mode.\r\n");
-
-	Serial.println("\thelp - displays this help info.\r\n");
-	Serial.println("\tversion - displays app version.\r\n");
-
-	Serial.println("\tstatus leds - displays current status for each of the led's.\r\n");
-
-	Serial.println("\r\n\r\n\tNote: commands are not case sensitive.\r\n");
 
 
+/**
+ * This prints a help menu of available commands. In trying to save memory, it only shows the name of each command. Not what it does.
+ * Note: this method has at least 700-800 bytes of memory used. Shrinking / reducing it may be necessary.
+ */
+void showHelp(){
+	Serial.println("\r\nHelp:\r\nHere's a list of the available commands:\r\nd13 on\r\nd13 off\r\nd13 blink\r\n\r\n"
+							"led green\r\nled red\r\nled off\r\nled blink\r\nled alt\r\n\r\n"
+							"set blink <number>  (ex. set blink 1000)\r\n"
+							"status leds\r\nversion\r\nhelp\r\n\r\n");
+							//"debug on,  debug off");
+			// "\r\nHelp for Arduino Project 1\r\n\r\n"
+			// "Here are the commands that can be entered:\r\n"
+			// "\td13 on - onboard led on\r\n" 
+			// "\td13 off - onboard led off\r\n"
+			// "\td13 blink - blinks onboard led\r\n"
+			// "\tled green - green led on\r\n"
+			// "\tled red - red led on\r\n"
+			// "\tled off - green & red led off\r\n"
+			// "\tled blink - blinks led\r\n"
+			// "\tled alt - alternates colors\r\n"
+			// "\tset blink <number> - ie. set blink 500 (in ms)\r\n"
+			// "\tdebug on - debug mode on - shows more debug info\r\n"
+			// "\tdebug off - debug mode off\r\n"
+			// "\thelp - shows this help file\r\n"
+			// "\tversion - shows app version\r\n"
+			// "\tstatus leds - shows the status of each led\r\n\r\n"
+			// "\tNote: commands are not case sensitive.\r\n");
 }
 
-/*
- * Prints the version info to serial.
+/**
+ * Prints the given app version to serial.
  * */
 void showVersion(float version ){
-	Serial.print("\r\n\r\nThe current version of this app is: ");
-	Serial.print(version);
-	Serial.println("\r\nIt was written by Chris Buchanan\r\n\r\n");
+	Serial.println();
+	Serial.print("Version ");
+	Serial.println(version);
 }

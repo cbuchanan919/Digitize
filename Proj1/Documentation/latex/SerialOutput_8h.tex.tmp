@@ -1,0 +1,142 @@
+\hypertarget{SerialOutput_8h}{}\doxysection{libraries/\+Serial\+Output.h File Reference}
+\label{SerialOutput_8h}\index{libraries/SerialOutput.h@{libraries/SerialOutput.h}}
+This graph shows which files directly or indirectly include this file\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{SerialOutput_8h_aaf41e8c2269f1b1a68fb68252ac61307}{show\+Led\+Status}} (\mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} $\ast$\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}})
+\begin{DoxyCompactList}\small\item\em This just prints out the details of each character in input. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{SerialOutput_8h_aec315d77f5c38417289a0e311d2a9d31}{show\+Help}} ()
+\begin{DoxyCompactList}\small\item\em This prints a help menu of available commands. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{SerialOutput_8h_aaeb84f87ecb050bdd791bfc39ef1259f}{show\+Version}} (float version)
+\begin{DoxyCompactList}\small\item\em Prints the given app version to serial. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{SerialOutput_8h_aec315d77f5c38417289a0e311d2a9d31}\label{SerialOutput_8h_aec315d77f5c38417289a0e311d2a9d31}} 
+\index{SerialOutput.h@{SerialOutput.h}!showHelp@{showHelp}}
+\index{showHelp@{showHelp}!SerialOutput.h@{SerialOutput.h}}
+\doxysubsubsection{\texorpdfstring{showHelp()}{showHelp()}}
+{\footnotesize\ttfamily void show\+Help (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+This prints a help menu of available commands. 
+
+In trying to save memory, it only shows the name of each command. Not what it does. Note\+: this method has at least 700-\/800 bytes of memory used. Shrinking / reducing it may be necessary. 
+
+Definition at line 76 of file Serial\+Output.\+h.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{76                \{}
+\DoxyCodeLine{77     Serial.println(\textcolor{stringliteral}{"{}\(\backslash\)r\(\backslash\)nHelp:\(\backslash\)r\(\backslash\)nHere's a list of the available commands:\(\backslash\)r\(\backslash\)nd13 on\(\backslash\)r\(\backslash\)nd13 off\(\backslash\)r\(\backslash\)nd13 blink\(\backslash\)r\(\backslash\)n\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{78                             \textcolor{stringliteral}{"{}led green\(\backslash\)r\(\backslash\)nled red\(\backslash\)r\(\backslash\)nled off\(\backslash\)r\(\backslash\)nled blink\(\backslash\)r\(\backslash\)nled alt\(\backslash\)r\(\backslash\)n\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{79                             \textcolor{stringliteral}{"{}set blink <number>  (ex. set blink 1000)\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{80                             \textcolor{stringliteral}{"{}status leds\(\backslash\)r\(\backslash\)nversion\(\backslash\)r\(\backslash\)nhelp\(\backslash\)r\(\backslash\)n\(\backslash\)r\(\backslash\)n"{}});}
+\DoxyCodeLine{81                             \textcolor{comment}{//"{}debug on,  debug off"{});}}
+\DoxyCodeLine{82             \textcolor{comment}{// "{}\(\backslash\)r\(\backslash\)nHelp for Arduino Project 1\(\backslash\)r\(\backslash\)n\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{83             \textcolor{comment}{// "{}Here are the commands that can be entered:\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{84             \textcolor{comment}{// "{}\(\backslash\)td13 on -\/ onboard led on\(\backslash\)r\(\backslash\)n"{} }}
+\DoxyCodeLine{85             \textcolor{comment}{// "{}\(\backslash\)td13 off -\/ onboard led off\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{86             \textcolor{comment}{// "{}\(\backslash\)td13 blink -\/ blinks onboard led\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{87             \textcolor{comment}{// "{}\(\backslash\)tled green -\/ green led on\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{88             \textcolor{comment}{// "{}\(\backslash\)tled red -\/ red led on\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{89             \textcolor{comment}{// "{}\(\backslash\)tled off -\/ green \& red led off\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{90             \textcolor{comment}{// "{}\(\backslash\)tled blink -\/ blinks led\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{91             \textcolor{comment}{// "{}\(\backslash\)tled alt -\/ alternates colors\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{92             \textcolor{comment}{// "{}\(\backslash\)tset blink <number> -\/ ie. set blink 500 (in ms)\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{93             \textcolor{comment}{// "{}\(\backslash\)tdebug on -\/ debug mode on -\/ shows more debug info\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{94             \textcolor{comment}{// "{}\(\backslash\)tdebug off -\/ debug mode off\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{95             \textcolor{comment}{// "{}\(\backslash\)thelp -\/ shows this help file\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{96             \textcolor{comment}{// "{}\(\backslash\)tversion -\/ shows app version\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{97             \textcolor{comment}{// "{}\(\backslash\)tstatus leds -\/ shows the status of each led\(\backslash\)r\(\backslash\)n\(\backslash\)r\(\backslash\)n"{}}}
+\DoxyCodeLine{98             \textcolor{comment}{// "{}\(\backslash\)tNote: commands are not case sensitive.\(\backslash\)r\(\backslash\)n"{});}}
+\DoxyCodeLine{99 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{SerialOutput_8h_aaf41e8c2269f1b1a68fb68252ac61307}\label{SerialOutput_8h_aaf41e8c2269f1b1a68fb68252ac61307}} 
+\index{SerialOutput.h@{SerialOutput.h}!showLedStatus@{showLedStatus}}
+\index{showLedStatus@{showLedStatus}!SerialOutput.h@{SerialOutput.h}}
+\doxysubsubsection{\texorpdfstring{showLedStatus()}{showLedStatus()}}
+{\footnotesize\ttfamily void show\+Led\+Status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} $\ast$}]{led }\end{DoxyParamCaption})}
+
+
+
+This just prints out the details of each character in input. 
+
+It iterates through each character of input and prints out the position followed by the value. Prints to serial the status of the referenced led. It will display the following details\+: led name, blinking or solid, turned on or off, how fast it blinks. 
+
+Definition at line 25 of file Serial\+Output.\+h.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{25                                     \{}
+\DoxyCodeLine{26     Serial.print(\textcolor{stringliteral}{"{}\(\backslash\)r\(\backslash\)nStatus for: "{}});}
+\DoxyCodeLine{27     \textcolor{keywordflow}{switch} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa5ee8f17938fa02774787e736c07163d}{ledName}}) \{}
+\DoxyCodeLine{28         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a5b4eee836099c815e9f714926d96f9db}{t\_D13}}:}
+\DoxyCodeLine{29             Serial.print(\textcolor{stringliteral}{"{}D13"{}});}
+\DoxyCodeLine{30             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{31         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a2e0001554121d4105293f041cb50fcd2}{t\_LED}}:}
+\DoxyCodeLine{32             Serial.print(\textcolor{stringliteral}{"{}LED"{}});}
+\DoxyCodeLine{33             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{34         \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{35             Serial.print(\textcolor{stringliteral}{"{}an led"{}});}
+\DoxyCodeLine{36     \}}
+\DoxyCodeLine{37     Serial.print(\textcolor{stringliteral}{"{}. \(\backslash\)r\(\backslash\)n"{}});}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39     \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} == \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}})\{}
+\DoxyCodeLine{40         Serial.print(\textcolor{stringliteral}{"{}Blinks every "{}});}
+\DoxyCodeLine{41         Serial.print(\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a78578397a14a35391c1f9ea22f4409f2}{blinkRate}});}
+\DoxyCodeLine{42         Serial.print(\textcolor{stringliteral}{"{} ms.\(\backslash\)r\(\backslash\)n"{}});}
+\DoxyCodeLine{43     \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} == \mbox{\hyperlink{consts_8h_a4e78c8294bbd4e9836b031ad200d7d86}{t\_ALT}})\{}
+\DoxyCodeLine{44         Serial.print(\textcolor{stringliteral}{"{}Alternates colors every "{}});}
+\DoxyCodeLine{45         Serial.print(\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a78578397a14a35391c1f9ea22f4409f2}{blinkRate}});}
+\DoxyCodeLine{46         Serial.print(\textcolor{stringliteral}{"{} ms.\(\backslash\)r\(\backslash\)n"{}});}
+\DoxyCodeLine{47     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{48         Serial.print(\textcolor{stringliteral}{"{}It is turned "{}});}
+\DoxyCodeLine{49         \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} == \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}}) \{ }
+\DoxyCodeLine{50             Serial.print(\textcolor{stringliteral}{"{}on.\(\backslash\)r\(\backslash\)n"{}}); \}}
+\DoxyCodeLine{51         \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{52             Serial.print(\textcolor{stringliteral}{"{}off.\(\backslash\)r\(\backslash\)n"{}}); \}}
+\DoxyCodeLine{53     \}}
+\DoxyCodeLine{54     Serial.print(\textcolor{stringliteral}{"{}Color is "{}});}
+\DoxyCodeLine{55     \textcolor{keywordflow}{switch} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}})\{}
+\DoxyCodeLine{56         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_afa0d75305bfa56cb95f6d6e8572fbadb}{t\_GREEN}}:}
+\DoxyCodeLine{57             Serial.print(\textcolor{stringliteral}{"{}green"{}});}
+\DoxyCodeLine{58             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{59         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_afc7a6314db507b22a7c623fa3f67912a}{t\_RED}}:}
+\DoxyCodeLine{60             Serial.print(\textcolor{stringliteral}{"{}red"{}});}
+\DoxyCodeLine{61             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{62         \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{63             Serial.print(\textcolor{stringliteral}{"{}white"{}});}
+\DoxyCodeLine{64     \}}
+\DoxyCodeLine{65     Serial.print(\textcolor{stringliteral}{"{}.\(\backslash\)r\(\backslash\)n"{}});}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{SerialOutput_8h_aaeb84f87ecb050bdd791bfc39ef1259f}\label{SerialOutput_8h_aaeb84f87ecb050bdd791bfc39ef1259f}} 
+\index{SerialOutput.h@{SerialOutput.h}!showVersion@{showVersion}}
+\index{showVersion@{showVersion}!SerialOutput.h@{SerialOutput.h}}
+\doxysubsubsection{\texorpdfstring{showVersion()}{showVersion()}}
+{\footnotesize\ttfamily void show\+Version (\begin{DoxyParamCaption}\item[{float}]{version }\end{DoxyParamCaption})}
+
+
+
+Prints the given app version to serial. 
+
+
+
+Definition at line 104 of file Serial\+Output.\+h.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{104                                 \{}
+\DoxyCodeLine{105     Serial.println();}
+\DoxyCodeLine{106     Serial.print(\textcolor{stringliteral}{"{}Version "{}});}
+\DoxyCodeLine{107     Serial.println(version);}
+\DoxyCodeLine{108 \}}
+
+\end{DoxyCode}

@@ -2,46 +2,28 @@
 #include <consts.h>
 #include <structs.h>
 #include <SerialOutput.h>
-
-
-// function headers
-void clearInput();
-int getInput();
-//void showInputDetails();
-void showInputDetails(char *inputArr, int maxLength);
-void parseInput();
-unsigned char getCommandFromWord(int start, int end);
-unsigned int getNumber(int start, int end);
-void applyCommands(unsigned char newCmd[6]);
-void showLedStatus(LedSettings *led);
-void ledControl(LedSettings *led, char overrides);
-void showHelp();
-void showVersion(float version);
-// ----------------
+#include <funcProto.h>
 
 
 
 
+char input[maxLen + 1]; 	///< An input buffer used to parse input from serial
+int inputIndex = 0; 		///< used to store current index of input.
 
-char input[maxLen + 1]; 	// used to parse input from serial
-int inputIndex = 0; 		// used to store current index of input.
+int commandEntered = 1;		///< used to record if a command needs to be parsed. If user presses return, this is set to 1, and input is parsed.
 
-int commandEntered = 1;
+char inDebugMode = t_EOL;	///< if = t_DEBUG, shows more info in console. Currently disabled for space saving purposes.
 
-char inDebugMode = t_EOL;	// if = t_DEBUG, shows more info in console.
+LedSettings d13;		///< onboard (pin 13) led settings
+LedSettings led;		///< 2 color led settings
 
-LedSettings d13;		// onboard (pin 13) led settings
-LedSettings led;		// 2 color led settings
-
-/*
- * first / initial function. Where all initialization is done.
- * */
+/**
+ * The first / initial function, it's where all initialization is done.
+ */
 void setup() {
 	Serial.begin(9600);
 	while (!Serial){ /*wait*/}
-	Serial.setTimeout(500);
-	Serial.println("Info: Type 'help' for command options.");
-
+	Serial.println("For commands, type 'help'");
 
 	// d13
 	d13.ledName = t_D13;
@@ -60,9 +42,10 @@ void setup() {
 	pinMode(t_GREEN, OUTPUT);	// red led
 }
 
-/*
- * second / looping function. This is the main control method after setup runs. It loops over and over throughout the lifetime of the app.
- * */
+/**
+ * The second / looping function. 
+ * This is the main control method after setup runs. It loops over and over throughout the lifetime of the app.
+ */
 void loop(){
 
 	if (getInput() > 0){
@@ -73,9 +56,9 @@ void loop(){
 }
 
 
-/*
+/**
  * Sets all characters in input to null. Also sets input index to 0.
- * */
+ */
 void clearInput() {
 	inputIndex = 0;
 	for (int i = 0; i < maxLen + 1; i++){
@@ -84,9 +67,9 @@ void clearInput() {
 }
 
 
-/*
- * This gets an input charcter from the console. It returns 0 till the return key is pressed, or the max characters reached. Then it returns 1.
- * It will write current character to the input variable (array).
+/**
+ * This gets an input charcter from the console. It returns 0 till the return key is pressed, or the max characters reached. 
+ * Then it returns 1. It will write current character to the input variable (array).
  */
 int getInput(){
 	int cont = 1;
@@ -96,7 +79,7 @@ int getInput(){
 		if (commandEntered == 1){
 			clearInput();
 			commandEntered = 0;
-			Serial.println("\r\nPlease enter command:");
+			Serial.println("\r\nEnter command:");
 		}
 		if (Serial.available() > 0){
 			addChar = 1;
@@ -137,6 +120,7 @@ int getInput(){
 		if (commandEntered == 1){
 			// command entered. show what was entered.
 			input[inputIndex] = '\0';
+			/*
 			if (inDebugMode == t_DEBUG){
 				Serial.println("\r\nYou Wrote: ");
 				Serial.println(input);
@@ -146,14 +130,17 @@ int getInput(){
 				Serial.println();
 				showInputDetails(&input[0], maxLen);
 			}
+			*/
 		}
 	}
 	return commandEntered;
 }
 
-/*
- *
- * */
+/**
+ * It parses all the characters of the input buffer looking for commands. For each word detected, 
+ * it checks to see if it's a recognised command. If it is, it adds it to a command buffer. 
+ * It then passes the command buffer to the apply commands method.
+ */
 void parseInput(){
 	int start = 0;
 	int end = 0;
@@ -173,10 +160,12 @@ void parseInput(){
 					if (cmdIndex > 1 && commands[cmdIndex - 2] == t_SET && commands[cmdIndex - 1] == t_BLINK){
 						// set blink. check for number
 						unsigned int num = getNumber(start, end);
+						/*
 						if (inDebugMode == t_DEBUG){
 							Serial.print("\r\nNumber: ");
 							Serial.print(num);
 						}
+						*/
 						if (num > 0){
 							// number found
 							if (num < 256){
@@ -210,13 +199,15 @@ void parseInput(){
 	} 
 	if (cmdIndex == 0) {
 		// no command recognised
-		Serial.print(" (Command not recognised)\r\n");
+		Serial.print(" (unrecognised command)\r\n");
 	}
+	/*
 	if (inDebugMode == t_DEBUG){
 		Serial.print("\r\nI found ");
 		Serial.print(cmdIndex);
 		Serial.print(" commands.\r\n");
 	}
+	*/
 	if (cmdIndex > 0) {
 		commands[cmdIndex] = t_EOL;
 		applyCommands(commands);
@@ -224,7 +215,7 @@ void parseInput(){
 }
 
 
-/*
+/**
  * Tries to get a command from a word. It goes through the lookup table and if a match is found, returns the token associated with the command. 
  * int start: starting index of the word.
  * int end: last character of the word.
@@ -233,9 +224,11 @@ unsigned char getCommandFromWord(int start, int end){
 	int wordLen = end - start;
 	int lookupLen = sizeof(lookupTable)/sizeof(lookupTable[0]);
 	if (wordLen >= 2) { 
+		char s = tolower(input[start]);
+		char s1 = tolower(input[start + 1]);
 		for (int i = 0; i < lookupLen; i+= 4){
-			if (lookupTable[i] == tolower(input[start])){
-				if (lookupTable[i + 1] == tolower(input[start + 1])) {
+			if (lookupTable[i] == s){
+				if (lookupTable[i + 1] == s1) {
 					int lookupLen = lookupTable[i + 2] - '0';
 					if (lookupLen == wordLen){
 						return lookupTable[i + 3]; 
@@ -243,16 +236,17 @@ unsigned char getCommandFromWord(int start, int end){
 				}
 
 			}
-			//Serial.println(lookupTable[i]);
 		}	
 	}
+	/*
 	if (inDebugMode == t_DEBUG){ Serial.println("no command found"); }
+	*/
 	return t_NO_COMMAND_FOUND;
 }
 
-/*
+/**
  * Returns an integer from the given location in the input string if found. Else returns 0.
- * */
+ */
 unsigned int getNumber(int start, int end){
 	unsigned int result = 0;
 	char check;
@@ -267,9 +261,9 @@ unsigned int getNumber(int start, int end){
 }
 
 
-/*
- * Performs given command based on the logic in the switch tree.
- * */
+/**
+ * Performs given command based on the logic in the switch tree. 
+ */
 void applyCommands(unsigned char newCmd[6]){
 	switch (newCmd[0]) {
 		case t_D13:
@@ -332,10 +326,12 @@ void applyCommands(unsigned char newCmd[6]){
 							blinkRate = (unsigned int)c;
 						break;
 					}
+					/*
 					if (inDebugMode == t_DEBUG){
 						Serial.print("The converted int: ");
 						Serial.print(blinkRate);
 					}
+					*/
 					if (blinkRate > 0){
 						led.blinkRate = blinkRate;
 						d13.blinkRate = blinkRate;	
@@ -348,6 +344,7 @@ void applyCommands(unsigned char newCmd[6]){
 			break;
 
 		case t_DEBUG:
+			/*
 			if (newCmd[1] == t_ON) {
 				inDebugMode = t_DEBUG;
 				Serial.println("\r\ndebug mode on");
@@ -355,6 +352,7 @@ void applyCommands(unsigned char newCmd[6]){
 				inDebugMode = t_EOL;
 				Serial.println("\r\ndebug mode off");
 			}
+			*/
 			break;
 		case t_HELP:
 			showHelp();
@@ -379,8 +377,8 @@ void applyCommands(unsigned char newCmd[6]){
 
 
 
-/*
- * controls the blinking / status of the given led. Setting override to t_on will force the check.
+/**
+ * controls the blinking / status of the given led. Setting override to t_ON will force the check.
  * */
 void ledControl(LedSettings *led, char override){
 	int currentMillis = millis();
@@ -418,4 +416,5 @@ void ledControl(LedSettings *led, char override){
 
 	}
 }
+
 

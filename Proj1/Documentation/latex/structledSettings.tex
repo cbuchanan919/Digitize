@@ -1,0 +1,141 @@
+\hypertarget{structledSettings}{}\doxysection{led\+Settings Struct Reference}
+\label{structledSettings}\index{ledSettings@{ledSettings}}
+
+
+The available settings for one led.  
+
+
+
+
+{\ttfamily \#include $<$structs.\+h$>$}
+
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+unsigned char \mbox{\hyperlink{structledSettings_aa5ee8f17938fa02774787e736c07163d}{led\+Name}}
+\begin{DoxyCompactList}\small\item\em The tokenized name of the led. \end{DoxyCompactList}\item 
+unsigned char \mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{led\+Pin}}
+\begin{DoxyCompactList}\small\item\em The pin that the led is associated with. \end{DoxyCompactList}\item 
+unsigned char \mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{led\+Last\+Pin}} = \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\+\_\+\+EOL}}
+\begin{DoxyCompactList}\small\item\em The pin that was last turned on. \end{DoxyCompactList}\item 
+unsigned char \mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{led\+Setting}}
+\begin{DoxyCompactList}\small\item\em What overall state the led is set to\+: t\+\_\+\+ON, t\+\_\+\+OFF, t\+\_\+\+BLINK, or t\+\_\+\+ALT. \end{DoxyCompactList}\item 
+unsigned char \mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{led\+State}}
+\begin{DoxyCompactList}\small\item\em The current state of the led\+: HIGH, or LOW. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{structledSettings_a78578397a14a35391c1f9ea22f4409f2}{blink\+Rate}} = 500
+\begin{DoxyCompactList}\small\item\em How fast to blink in milliseconds. \end{DoxyCompactList}\item 
+unsigned long \mbox{\hyperlink{structledSettings_af6466a210d8b4e4685f0620730d4dc9d}{previous\+Millis}} = 0
+\begin{DoxyCompactList}\small\item\em Used to store the last blink time. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The available settings for one led. 
+
+Definition at line 4 of file structs.\+h.
+
+
+
+\doxysubsection{Field Documentation}
+\mbox{\Hypertarget{structledSettings_a78578397a14a35391c1f9ea22f4409f2}\label{structledSettings_a78578397a14a35391c1f9ea22f4409f2}} 
+\index{ledSettings@{ledSettings}!blinkRate@{blinkRate}}
+\index{blinkRate@{blinkRate}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{blinkRate}{blinkRate}}
+{\footnotesize\ttfamily unsigned int led\+Settings\+::blink\+Rate = 500}
+
+
+
+How fast to blink in milliseconds. 
+
+
+
+Definition at line 28 of file structs.\+h.
+
+\mbox{\Hypertarget{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}\label{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}} 
+\index{ledSettings@{ledSettings}!ledLastPin@{ledLastPin}}
+\index{ledLastPin@{ledLastPin}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{ledLastPin}{ledLastPin}}
+{\footnotesize\ttfamily unsigned char led\+Settings\+::led\+Last\+Pin = \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\+\_\+\+EOL}}}
+
+
+
+The pin that was last turned on. 
+
+Same as for led\+Pin\+: t\+\_\+\+GREEN, t\+\_\+\+RED, t\+\_\+\+D13 
+
+Definition at line 16 of file structs.\+h.
+
+\mbox{\Hypertarget{structledSettings_aa5ee8f17938fa02774787e736c07163d}\label{structledSettings_aa5ee8f17938fa02774787e736c07163d}} 
+\index{ledSettings@{ledSettings}!ledName@{ledName}}
+\index{ledName@{ledName}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{ledName}{ledName}}
+{\footnotesize\ttfamily unsigned char led\+Settings\+::led\+Name}
+
+
+
+The tokenized name of the led. 
+
+Currently either t\+\_\+\+LED or t\+\_\+\+D13 
+
+Definition at line 8 of file structs.\+h.
+
+\mbox{\Hypertarget{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}\label{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}} 
+\index{ledSettings@{ledSettings}!ledPin@{ledPin}}
+\index{ledPin@{ledPin}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{ledPin}{ledPin}}
+{\footnotesize\ttfamily unsigned char led\+Settings\+::led\+Pin}
+
+
+
+The pin that the led is associated with. 
+
+Current options\+: t\+\_\+\+GREEN, t\+\_\+\+RED, or t\+\_\+\+D13 
+
+Definition at line 12 of file structs.\+h.
+
+\mbox{\Hypertarget{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}\label{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}} 
+\index{ledSettings@{ledSettings}!ledSetting@{ledSetting}}
+\index{ledSetting@{ledSetting}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{ledSetting}{ledSetting}}
+{\footnotesize\ttfamily unsigned char led\+Settings\+::led\+Setting}
+
+
+
+What overall state the led is set to\+: t\+\_\+\+ON, t\+\_\+\+OFF, t\+\_\+\+BLINK, or t\+\_\+\+ALT. 
+
+
+
+Definition at line 20 of file structs.\+h.
+
+\mbox{\Hypertarget{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}\label{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}} 
+\index{ledSettings@{ledSettings}!ledState@{ledState}}
+\index{ledState@{ledState}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{ledState}{ledState}}
+{\footnotesize\ttfamily unsigned char led\+Settings\+::led\+State}
+
+
+
+The current state of the led\+: HIGH, or LOW. 
+
+
+
+Definition at line 24 of file structs.\+h.
+
+\mbox{\Hypertarget{structledSettings_af6466a210d8b4e4685f0620730d4dc9d}\label{structledSettings_af6466a210d8b4e4685f0620730d4dc9d}} 
+\index{ledSettings@{ledSettings}!previousMillis@{previousMillis}}
+\index{previousMillis@{previousMillis}!ledSettings@{ledSettings}}
+\doxysubsubsection{\texorpdfstring{previousMillis}{previousMillis}}
+{\footnotesize\ttfamily unsigned long led\+Settings\+::previous\+Millis = 0}
+
+
+
+Used to store the last blink time. 
+
+
+
+Definition at line 32 of file structs.\+h.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+libraries/\mbox{\hyperlink{structs_8h}{structs.\+h}}\end{DoxyCompactItemize}

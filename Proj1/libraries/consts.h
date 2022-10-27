@@ -20,7 +20,11 @@
 #define t_EOL 255
 // ---------------
 
-
+/**
+ * Table that commands are checked against. Each 'entry' is 4 characters long. 
+ * Characters 1 & 2 of each entry are the first two letters of the command word. Character 3 is the length of the word, 
+ * and character 4 is what the tokenized version of that word is.
+*/
 const char lookupTable[] = {
 	'o', 'f', '3', t_OFF, 
 	'o', 'n', '2', t_ON, 
@@ -38,6 +42,11 @@ const char lookupTable[] = {
 	'd', 'e', '5', t_DEBUG
 };
 
-
+/**
+ * Current app version. 
+ */
 const float appVersion = 1.01; 
-const int maxLen = 25;
+/**
+ * Max length of a command that can be entered at the serial prompt.
+*/
+const char maxLen = 15;

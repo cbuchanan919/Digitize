@@ -1,0 +1,649 @@
+\hypertarget{main_8cpp}{}\doxysection{main.\+cpp File Reference}
+\label{main_8cpp}\index{main.cpp@{main.cpp}}
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$consts.\+h$>$}\newline
+{\ttfamily \#include $<$structs.\+h$>$}\newline
+{\ttfamily \#include $<$Serial\+Output.\+h$>$}\newline
+{\ttfamily \#include $<$func\+Proto.\+h$>$}\newline
+Include dependency graph for main.\+cpp\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup}} ()
+\begin{DoxyCompactList}\small\item\em The first / initial function, it\textquotesingle{}s where all initialization is done. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop}} ()
+\begin{DoxyCompactList}\small\item\em The second / looping function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a5d555657ce648c1a47abb70f1029589d}{clear\+Input}} ()
+\begin{DoxyCompactList}\small\item\em Sets all characters in input to null. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{main_8cpp_a8392a352b0ea88fdb8bde83f8d9f657b}{get\+Input}} ()
+\begin{DoxyCompactList}\small\item\em This gets an input charcter from the console. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a59d66805ece9da6ffd55fa4cc8252ef1}{parse\+Input}} ()
+\begin{DoxyCompactList}\small\item\em It parses all the characters of the input buffer looking for commands. \end{DoxyCompactList}\item 
+unsigned char \mbox{\hyperlink{main_8cpp_aa0704294fdb37af8af54e90efed55308}{get\+Command\+From\+Word}} (int start, int end)
+\begin{DoxyCompactList}\small\item\em Tries to get a command from a word. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{main_8cpp_a810785218f0a23ab566a243330832a48}{get\+Number}} (int start, int end)
+\begin{DoxyCompactList}\small\item\em Returns an integer from the given location in the input string if found. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a6c1820a1656332cc7c1bdf12f88acb3f}{apply\+Commands}} (unsigned char new\+Cmd\mbox{[}6\mbox{]})
+\begin{DoxyCompactList}\small\item\em Performs given command based on the logic in the switch tree. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_ab928380f77ead6eae6d67fe75711811d}{led\+Control}} (\mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} $\ast$\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}, char override)
+\begin{DoxyCompactList}\small\item\em controls the blinking / status of the given led. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+char \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}} \mbox{[}\mbox{\hyperlink{consts_8h_aa05149f6f7ca43b88d7be1d332b33796}{max\+Len}}+1\mbox{]}
+\begin{DoxyCompactList}\small\item\em An input buffer used to parse input from serial. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{input\+Index}} = 0
+\begin{DoxyCompactList}\small\item\em used to store current index of input. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}{command\+Entered}} = 1
+\begin{DoxyCompactList}\small\item\em used to record if a command needs to be parsed. If user presses return, this is set to 1, and input is parsed. \end{DoxyCompactList}\item 
+char \mbox{\hyperlink{main_8cpp_a89878f39dcc8218e910385363adda025}{in\+Debug\+Mode}} = \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\+\_\+\+EOL}}
+\begin{DoxyCompactList}\small\item\em if = t\+\_\+\+DEBUG, shows more info in console. Currently disabled for space saving purposes. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}
+\begin{DoxyCompactList}\small\item\em onboard (pin 13) led settings \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}
+\begin{DoxyCompactList}\small\item\em 2 color led settings \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8cpp_a6c1820a1656332cc7c1bdf12f88acb3f}\label{main_8cpp_a6c1820a1656332cc7c1bdf12f88acb3f}} 
+\index{main.cpp@{main.cpp}!applyCommands@{applyCommands}}
+\index{applyCommands@{applyCommands}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{applyCommands()}{applyCommands()}}
+{\footnotesize\ttfamily void apply\+Commands (\begin{DoxyParamCaption}\item[{unsigned char}]{new\+Cmd\mbox{[}6\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Performs given command based on the logic in the switch tree. 
+
+
+
+Definition at line 267 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{267                                            \{}
+\DoxyCodeLine{268     \textcolor{keywordflow}{switch} (newCmd[0]) \{}
+\DoxyCodeLine{269         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a5b4eee836099c815e9f714926d96f9db}{t\_D13}}:}
+\DoxyCodeLine{270             \textcolor{keywordflow}{switch} (newCmd[1])\{}
+\DoxyCodeLine{271                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}}:}
+\DoxyCodeLine{272                     \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}};}
+\DoxyCodeLine{273                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{274                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a26267e9ab440f2214c138054809ebc41}{t\_OFF}}:}
+\DoxyCodeLine{275                     \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a26267e9ab440f2214c138054809ebc41}{t\_OFF}};}
+\DoxyCodeLine{276                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{277                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}}:}
+\DoxyCodeLine{278                     \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}};}
+\DoxyCodeLine{279                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{280                 \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{281                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{282             \}}
+\DoxyCodeLine{283             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{284         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a2e0001554121d4105293f041cb50fcd2}{t\_LED}}:}
+\DoxyCodeLine{285             \textcolor{keywordflow}{switch} (newCmd[1])\{}
+\DoxyCodeLine{286                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_afa0d75305bfa56cb95f6d6e8572fbadb}{t\_GREEN}}:}
+\DoxyCodeLine{287                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}};}
+\DoxyCodeLine{288                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{ledLastPin}} = \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}};}
+\DoxyCodeLine{289                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}} = \mbox{\hyperlink{consts_8h_afa0d75305bfa56cb95f6d6e8572fbadb}{t\_GREEN}};}
+\DoxyCodeLine{290                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{291                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_afc7a6314db507b22a7c623fa3f67912a}{t\_RED}}:}
+\DoxyCodeLine{292                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}};}
+\DoxyCodeLine{293                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{ledLastPin}} = \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}};}
+\DoxyCodeLine{294                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}} = \mbox{\hyperlink{consts_8h_afc7a6314db507b22a7c623fa3f67912a}{t\_RED}};}
+\DoxyCodeLine{295                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{296                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a26267e9ab440f2214c138054809ebc41}{t\_OFF}}:}
+\DoxyCodeLine{297                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a26267e9ab440f2214c138054809ebc41}{t\_OFF}};}
+\DoxyCodeLine{298                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{299                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}}:}
+\DoxyCodeLine{300                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}};}
+\DoxyCodeLine{301                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{302                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a4e78c8294bbd4e9836b031ad200d7d86}{t\_ALT}}:}
+\DoxyCodeLine{303                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a4e78c8294bbd4e9836b031ad200d7d86}{t\_ALT}};}
+\DoxyCodeLine{304                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{ledLastPin}} = \mbox{\hyperlink{consts_8h_afc7a6314db507b22a7c623fa3f67912a}{t\_RED}};}
+\DoxyCodeLine{305                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}} = \mbox{\hyperlink{consts_8h_afa0d75305bfa56cb95f6d6e8572fbadb}{t\_GREEN}};}
+\DoxyCodeLine{306                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}} = HIGH;}
+\DoxyCodeLine{307                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{308                 \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{309                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{310             \}}
+\DoxyCodeLine{311             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{312         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_ad3eb6610d71df44441214901b62d1375}{t\_SET}}:}
+\DoxyCodeLine{313             \textcolor{keywordflow}{switch} (newCmd[1])\{}
+\DoxyCodeLine{314                 \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}}:}
+\DoxyCodeLine{315                     \{}
+\DoxyCodeLine{316                     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} blinkRate = 0;}
+\DoxyCodeLine{317                     \textcolor{keywordflow}{switch} (newCmd[2])\{}
+\DoxyCodeLine{318                         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a6146bb11b2166da616e656d22bf6ed49}{t\_WORD}}:}
+\DoxyCodeLine{319                                 blinkRate = (newCmd[3] << 8) + newCmd[4];}
+\DoxyCodeLine{320                             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{321                         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\_EOL}}:}
+\DoxyCodeLine{322                             \textcolor{comment}{// badly implemented.}}
+\DoxyCodeLine{323                             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{324                         \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{325                             \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} c = newCmd[2];}
+\DoxyCodeLine{326                             blinkRate = (\textcolor{keywordtype}{unsigned} int)c;}
+\DoxyCodeLine{327                         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{328                     \}}
+\DoxyCodeLine{329                     \textcolor{comment}{/*}}
+\DoxyCodeLine{330 \textcolor{comment}{                    if (inDebugMode == t\_DEBUG)\{}}
+\DoxyCodeLine{331 \textcolor{comment}{                        Serial.print("{}The converted int: "{});}}
+\DoxyCodeLine{332 \textcolor{comment}{                        Serial.print(blinkRate);}}
+\DoxyCodeLine{333 \textcolor{comment}{                    \}}}
+\DoxyCodeLine{334 \textcolor{comment}{                    */}}
+\DoxyCodeLine{335                     \textcolor{keywordflow}{if} (blinkRate > 0)\{}
+\DoxyCodeLine{336                         \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a78578397a14a35391c1f9ea22f4409f2}{blinkRate}} = blinkRate;}
+\DoxyCodeLine{337                         \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_a78578397a14a35391c1f9ea22f4409f2}{blinkRate}} = blinkRate;  }
+\DoxyCodeLine{338                     \}}
+\DoxyCodeLine{339                     \}}
+\DoxyCodeLine{340                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{341                 \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{342                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{343             \}}
+\DoxyCodeLine{344             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{345 }
+\DoxyCodeLine{346         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a9a3d789cf6b3623fa82642ffa4142a47}{t\_DEBUG}}:}
+\DoxyCodeLine{347             \textcolor{comment}{/*}}
+\DoxyCodeLine{348 \textcolor{comment}{            if (newCmd[1] == t\_ON) \{}}
+\DoxyCodeLine{349 \textcolor{comment}{                inDebugMode = t\_DEBUG;}}
+\DoxyCodeLine{350 \textcolor{comment}{                Serial.println("{}\(\backslash\)r\(\backslash\)ndebug mode on"{});}}
+\DoxyCodeLine{351 \textcolor{comment}{            \} else if (newCmd[1] == t\_OFF) \{}}
+\DoxyCodeLine{352 \textcolor{comment}{                inDebugMode = t\_EOL;}}
+\DoxyCodeLine{353 \textcolor{comment}{                Serial.println("{}\(\backslash\)r\(\backslash\)ndebug mode off"{});}}
+\DoxyCodeLine{354 \textcolor{comment}{            \}}}
+\DoxyCodeLine{355 \textcolor{comment}{            */}}
+\DoxyCodeLine{356             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{357         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a2d4cbe2708e175aedc61766b29e87950}{t\_HELP}}:}
+\DoxyCodeLine{358             \mbox{\hyperlink{funcProto_8h_aec315d77f5c38417289a0e311d2a9d31}{showHelp}}();}
+\DoxyCodeLine{359             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{360         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_af2dd10e1fd0de45a00d217c71591ba92}{t\_VERSION}}:}
+\DoxyCodeLine{361             \mbox{\hyperlink{funcProto_8h_aaeb84f87ecb050bdd791bfc39ef1259f}{showVersion}}(\mbox{\hyperlink{consts_8h_a4ff12e8620277c6e78fe95e83564b9a2}{appVersion}});}
+\DoxyCodeLine{362             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{363         \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a39d2f3a836725460ea6b67d3546989ce}{t\_STATUS}}:}
+\DoxyCodeLine{364             \textcolor{keywordflow}{if} (newCmd[1] == \mbox{\hyperlink{consts_8h_a3636f768fdd950a959593f06e75fef1d}{t\_LEDS}})\{}
+\DoxyCodeLine{365                 \mbox{\hyperlink{funcProto_8h_aaf41e8c2269f1b1a68fb68252ac61307}{showLedStatus}}(\&\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}});}
+\DoxyCodeLine{366                 \mbox{\hyperlink{funcProto_8h_aaf41e8c2269f1b1a68fb68252ac61307}{showLedStatus}}(\&\mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}});}
+\DoxyCodeLine{367             \}}
+\DoxyCodeLine{368             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{369         \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{370             \textcolor{comment}{// do nothing}}
+\DoxyCodeLine{371             \textcolor{keywordflow}{break};}
+\DoxyCodeLine{372     \}}
+\DoxyCodeLine{373     \textcolor{comment}{// force check of validity of the led's}}
+\DoxyCodeLine{374     \mbox{\hyperlink{main_8cpp_ab928380f77ead6eae6d67fe75711811d}{ledControl}}(\&\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}, \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}});}
+\DoxyCodeLine{375     \mbox{\hyperlink{main_8cpp_ab928380f77ead6eae6d67fe75711811d}{ledControl}}(\&\mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}, \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}});}
+\DoxyCodeLine{376 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_a5d555657ce648c1a47abb70f1029589d}\label{main_8cpp_a5d555657ce648c1a47abb70f1029589d}} 
+\index{main.cpp@{main.cpp}!clearInput@{clearInput}}
+\index{clearInput@{clearInput}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{clearInput()}{clearInput()}}
+{\footnotesize\ttfamily void clear\+Input (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Sets all characters in input to null. 
+
+Also sets input index to 0. 
+
+Definition at line 62 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{62                   \{}
+\DoxyCodeLine{63     \mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}} = 0;}
+\DoxyCodeLine{64     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < \mbox{\hyperlink{consts_8h_aa05149f6f7ca43b88d7be1d332b33796}{maxLen}} + 1; i++)\{}
+\DoxyCodeLine{65         \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[i] = \textcolor{charliteral}{'\(\backslash\)0'};}
+\DoxyCodeLine{66     \}}
+\DoxyCodeLine{67 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_aa0704294fdb37af8af54e90efed55308}\label{main_8cpp_aa0704294fdb37af8af54e90efed55308}} 
+\index{main.cpp@{main.cpp}!getCommandFromWord@{getCommandFromWord}}
+\index{getCommandFromWord@{getCommandFromWord}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{getCommandFromWord()}{getCommandFromWord()}}
+{\footnotesize\ttfamily unsigned char get\+Command\+From\+Word (\begin{DoxyParamCaption}\item[{int}]{start,  }\item[{int}]{end }\end{DoxyParamCaption})}
+
+
+
+Tries to get a command from a word. 
+
+It goes through the lookup table and if a match is found, returns the token associated with the command. int start\+: starting index of the word. int end\+: last character of the word. 
+
+Definition at line 223 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{223                                                     \{}
+\DoxyCodeLine{224     \textcolor{keywordtype}{int} wordLen = end -\/ start;}
+\DoxyCodeLine{225     \textcolor{keywordtype}{int} lookupLen = \textcolor{keyword}{sizeof}(\mbox{\hyperlink{consts_8h_ad20e4338015c43c74b3944ec539d8217}{lookupTable}})/\textcolor{keyword}{sizeof}(\mbox{\hyperlink{consts_8h_ad20e4338015c43c74b3944ec539d8217}{lookupTable}}[0]);}
+\DoxyCodeLine{226     \textcolor{keywordflow}{if} (wordLen >= 2) \{ }
+\DoxyCodeLine{227         \textcolor{keywordtype}{char} s = tolower(\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[start]);}
+\DoxyCodeLine{228         \textcolor{keywordtype}{char} s1 = tolower(\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[start + 1]);}
+\DoxyCodeLine{229         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < lookupLen; i+= 4)\{}
+\DoxyCodeLine{230             \textcolor{keywordflow}{if} (\mbox{\hyperlink{consts_8h_ad20e4338015c43c74b3944ec539d8217}{lookupTable}}[i] == s)\{}
+\DoxyCodeLine{231                 \textcolor{keywordflow}{if} (\mbox{\hyperlink{consts_8h_ad20e4338015c43c74b3944ec539d8217}{lookupTable}}[i + 1] == s1) \{}
+\DoxyCodeLine{232                     \textcolor{keywordtype}{int} lookupLen = \mbox{\hyperlink{consts_8h_ad20e4338015c43c74b3944ec539d8217}{lookupTable}}[i + 2] -\/ \textcolor{charliteral}{'0'};}
+\DoxyCodeLine{233                     \textcolor{keywordflow}{if} (lookupLen == wordLen)\{}
+\DoxyCodeLine{234                         \textcolor{keywordflow}{return} \mbox{\hyperlink{consts_8h_ad20e4338015c43c74b3944ec539d8217}{lookupTable}}[i + 3]; }
+\DoxyCodeLine{235                     \}}
+\DoxyCodeLine{236                 \}}
+\DoxyCodeLine{237 }
+\DoxyCodeLine{238             \}}
+\DoxyCodeLine{239         \}   }
+\DoxyCodeLine{240     \}}
+\DoxyCodeLine{241     \textcolor{comment}{/*}}
+\DoxyCodeLine{242 \textcolor{comment}{    if (inDebugMode == t\_DEBUG)\{ Serial.println("{}no command found"{}); \}}}
+\DoxyCodeLine{243 \textcolor{comment}{    */}}
+\DoxyCodeLine{244     \textcolor{keywordflow}{return} \mbox{\hyperlink{consts_8h_a6e7ac3b6af135b1b6568c682c9671f36}{t\_NO\_COMMAND\_FOUND}};}
+\DoxyCodeLine{245 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_a8392a352b0ea88fdb8bde83f8d9f657b}\label{main_8cpp_a8392a352b0ea88fdb8bde83f8d9f657b}} 
+\index{main.cpp@{main.cpp}!getInput@{getInput}}
+\index{getInput@{getInput}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{getInput()}{getInput()}}
+{\footnotesize\ttfamily int get\+Input (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+This gets an input charcter from the console. 
+
+It returns 0 till the return key is pressed, or the max characters reached. Then it returns 1. It will write current character to the input variable (array). 
+
+Definition at line 74 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{74               \{}
+\DoxyCodeLine{75     \textcolor{keywordtype}{int} cont = 1;}
+\DoxyCodeLine{76     \textcolor{keywordtype}{int} addChar = 1;}
+\DoxyCodeLine{77     \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}} < 0) \{\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}} = 0;\}}
+\DoxyCodeLine{78     \textcolor{keywordflow}{if} (Serial)\{}
+\DoxyCodeLine{79         \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}{commandEntered}} == 1)\{}
+\DoxyCodeLine{80             \mbox{\hyperlink{main_8cpp_a5d555657ce648c1a47abb70f1029589d}{clearInput}}();}
+\DoxyCodeLine{81             \mbox{\hyperlink{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}{commandEntered}} = 0;}
+\DoxyCodeLine{82             Serial.println(\textcolor{stringliteral}{"{}\(\backslash\)r\(\backslash\)nEnter command:"{}});}
+\DoxyCodeLine{83         \}}
+\DoxyCodeLine{84         \textcolor{keywordflow}{if} (Serial.available() > 0)\{}
+\DoxyCodeLine{85             addChar = 1;}
+\DoxyCodeLine{86             \textcolor{keywordtype}{char} check = Serial.read();}
+\DoxyCodeLine{87             \textcolor{keywordflow}{if} (check == 32 \&\& \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}} -\/ 1] == 32) \{ \textcolor{comment}{/*No double spaces*/} addChar = 0; \}}
+\DoxyCodeLine{88             \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}} >= \mbox{\hyperlink{consts_8h_aa05149f6f7ca43b88d7be1d332b33796}{maxLen}}) \{ \textcolor{comment}{/* max input reached */} cont = 0; \}}
+\DoxyCodeLine{89             \textcolor{keywordflow}{if} (check == 13)\{ }
+\DoxyCodeLine{90                 \textcolor{comment}{/* Return key entered */} }
+\DoxyCodeLine{91                 cont = 0; }
+\DoxyCodeLine{92                 \mbox{\hyperlink{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}{commandEntered}} = 1;}
+\DoxyCodeLine{93             \}}
+\DoxyCodeLine{94             \textcolor{keywordflow}{if} (check == 8 || check == 127) \{}
+\DoxyCodeLine{95                 \textcolor{comment}{// backspace \& delete}}
+\DoxyCodeLine{96                 addChar = 0;}
+\DoxyCodeLine{97                                     }
+\DoxyCodeLine{98                 \textcolor{comment}{// print new line}}
+\DoxyCodeLine{99                 \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[0] != \textcolor{charliteral}{'\(\backslash\)0'})\{}
+\DoxyCodeLine{100                     Serial.print(\textcolor{stringliteral}{"{}<<"{}});}
+\DoxyCodeLine{101                     Serial.println();}
+\DoxyCodeLine{102                 \}}
+\DoxyCodeLine{103                 }
+\DoxyCodeLine{104                 \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}} > 0) \{ \mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}}-\/-\/; \}}
+\DoxyCodeLine{105                 \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}}] = \textcolor{charliteral}{'\(\backslash\)0'};}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107                 \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[0] != \textcolor{charliteral}{'\(\backslash\)0'})\{}
+\DoxyCodeLine{108                     Serial.print(\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}});}
+\DoxyCodeLine{109                 \}}
+\DoxyCodeLine{110                 }
+\DoxyCodeLine{111                 }
+\DoxyCodeLine{112             \}}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114             \textcolor{keywordflow}{if} (cont == 1 \&\& addChar == 1) \{ }
+\DoxyCodeLine{115                 \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}}] = check; }
+\DoxyCodeLine{116                 Serial.print(check);}
+\DoxyCodeLine{117                 \mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}}++;}
+\DoxyCodeLine{118             \}}
+\DoxyCodeLine{119         \}}
+\DoxyCodeLine{120         \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}{commandEntered}} == 1)\{}
+\DoxyCodeLine{121             \textcolor{comment}{// command entered. show what was entered.}}
+\DoxyCodeLine{122             \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[\mbox{\hyperlink{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}{inputIndex}}] = \textcolor{charliteral}{'\(\backslash\)0'};}
+\DoxyCodeLine{123             \textcolor{comment}{/*}}
+\DoxyCodeLine{124 \textcolor{comment}{            if (inDebugMode == t\_DEBUG)\{}}
+\DoxyCodeLine{125 \textcolor{comment}{                Serial.println("{}\(\backslash\)r\(\backslash\)nYou Wrote: "{});}}
+\DoxyCodeLine{126 \textcolor{comment}{                Serial.println(input);}}
+\DoxyCodeLine{127 \textcolor{comment}{                Serial.println('\(\backslash\)r\(\backslash\)n');}}
+\DoxyCodeLine{128 \textcolor{comment}{                Serial.print("{}InputIndex: "{});}}
+\DoxyCodeLine{129 \textcolor{comment}{                Serial.print(inputIndex);}}
+\DoxyCodeLine{130 \textcolor{comment}{                Serial.println();}}
+\DoxyCodeLine{131 \textcolor{comment}{                showInputDetails(\&input[0], maxLen);}}
+\DoxyCodeLine{132 \textcolor{comment}{            \}}}
+\DoxyCodeLine{133 \textcolor{comment}{            */}}
+\DoxyCodeLine{134         \}}
+\DoxyCodeLine{135     \}}
+\DoxyCodeLine{136     \textcolor{keywordflow}{return} \mbox{\hyperlink{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}{commandEntered}};}
+\DoxyCodeLine{137 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_a810785218f0a23ab566a243330832a48}\label{main_8cpp_a810785218f0a23ab566a243330832a48}} 
+\index{main.cpp@{main.cpp}!getNumber@{getNumber}}
+\index{getNumber@{getNumber}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{getNumber()}{getNumber()}}
+{\footnotesize\ttfamily unsigned int get\+Number (\begin{DoxyParamCaption}\item[{int}]{start,  }\item[{int}]{end }\end{DoxyParamCaption})}
+
+
+
+Returns an integer from the given location in the input string if found. 
+
+Else returns 0. 
+
+Definition at line 250 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{250                                           \{}
+\DoxyCodeLine{251     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} result = 0;}
+\DoxyCodeLine{252     \textcolor{keywordtype}{char} check;}
+\DoxyCodeLine{253     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = start; i < end; i++)\{}
+\DoxyCodeLine{254         check = \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[i];}
+\DoxyCodeLine{255         \textcolor{keywordflow}{if} (check > \textcolor{charliteral}{'9'} || check < \textcolor{charliteral}{'0'}) \{}
+\DoxyCodeLine{256             \textcolor{keywordflow}{return} 0; \textcolor{comment}{// some error occured.}}
+\DoxyCodeLine{257         \}}
+\DoxyCodeLine{258         result = (result*10) + check -\/ \textcolor{charliteral}{'0'};}
+\DoxyCodeLine{259     \}}
+\DoxyCodeLine{260     \textcolor{keywordflow}{return} result;  }
+\DoxyCodeLine{261 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_ab928380f77ead6eae6d67fe75711811d}\label{main_8cpp_ab928380f77ead6eae6d67fe75711811d}} 
+\index{main.cpp@{main.cpp}!ledControl@{ledControl}}
+\index{ledControl@{ledControl}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ledControl()}{ledControl()}}
+{\footnotesize\ttfamily void led\+Control (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} $\ast$}]{led,  }\item[{char}]{override }\end{DoxyParamCaption})}
+
+
+
+controls the blinking / status of the given led. 
+
+Setting override to t\+\_\+\+ON will force the check. 
+
+Definition at line 383 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{383                                                 \{}
+\DoxyCodeLine{384     \textcolor{keywordtype}{int} currentMillis = millis();}
+\DoxyCodeLine{385     \textcolor{keywordflow}{if} (currentMillis -\/ \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_af6466a210d8b4e4685f0620730d4dc9d}{previousMillis}} >= \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a78578397a14a35391c1f9ea22f4409f2}{blinkRate}} || \textcolor{keyword}{override} == \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}})\{}
+\DoxyCodeLine{386         \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_af6466a210d8b4e4685f0620730d4dc9d}{previousMillis}} = currentMillis;}
+\DoxyCodeLine{387         \textcolor{keywordflow}{switch} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}}) \{}
+\DoxyCodeLine{388             \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a4e78c8294bbd4e9836b031ad200d7d86}{t\_ALT}}:}
+\DoxyCodeLine{389                 \{}
+\DoxyCodeLine{390                 \textcolor{keywordtype}{char} tmpPrev = \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{ledLastPin}};}
+\DoxyCodeLine{391                 \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{ledLastPin}} = \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}};}
+\DoxyCodeLine{392                 \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}} = tmpPrev;}
+\DoxyCodeLine{393                 \}}
+\DoxyCodeLine{394                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{395             \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}}:}
+\DoxyCodeLine{396                 \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}} == HIGH) \{}
+\DoxyCodeLine{397                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}} = LOW;}
+\DoxyCodeLine{398                 \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{399                     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}} = HIGH;}
+\DoxyCodeLine{400                 \}}
+\DoxyCodeLine{401 }
+\DoxyCodeLine{402                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{403             \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_ab175fbc4e7f62eab146965abab38bdc6}{t\_ON}}:}
+\DoxyCodeLine{404                 \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}} = HIGH;}
+\DoxyCodeLine{405                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{406             \textcolor{keywordflow}{case} \mbox{\hyperlink{consts_8h_a26267e9ab440f2214c138054809ebc41}{t\_OFF}}:}
+\DoxyCodeLine{407                 \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}} = LOW;}
+\DoxyCodeLine{408                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{409             \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{410                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{411         \}}
+\DoxyCodeLine{412 }
+\DoxyCodeLine{413 }
+\DoxyCodeLine{414         digitalWrite(\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_a7ecc8efa8fe2087722f658a9460b5f01}{ledLastPin}}, LOW);}
+\DoxyCodeLine{415         digitalWrite(\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}}, \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}-\/>\mbox{\hyperlink{structledSettings_aa8b96a738e2be3f201071eeafcb24c32}{ledState}});}
+\DoxyCodeLine{416 }
+\DoxyCodeLine{417     \}}
+\DoxyCodeLine{418 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_afe461d27b9c48d5921c00d521181f12f}\label{main_8cpp_afe461d27b9c48d5921c00d521181f12f}} 
+\index{main.cpp@{main.cpp}!loop@{loop}}
+\index{loop@{loop}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{loop()}{loop()}}
+{\footnotesize\ttfamily void loop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+The second / looping function. 
+
+This is the main control method after setup runs. It loops over and over throughout the lifetime of the app. 
+
+Definition at line 49 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{49            \{}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{51     \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_a8392a352b0ea88fdb8bde83f8d9f657b}{getInput}}() > 0)\{}
+\DoxyCodeLine{52         \mbox{\hyperlink{main_8cpp_a59d66805ece9da6ffd55fa4cc8252ef1}{parseInput}}();}
+\DoxyCodeLine{53     \}}
+\DoxyCodeLine{54     \mbox{\hyperlink{main_8cpp_ab928380f77ead6eae6d67fe75711811d}{ledControl}}(\&\mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}, \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\_EOL}});}
+\DoxyCodeLine{55     \mbox{\hyperlink{main_8cpp_ab928380f77ead6eae6d67fe75711811d}{ledControl}}(\&\mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}, \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\_EOL}});}
+\DoxyCodeLine{56 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_a59d66805ece9da6ffd55fa4cc8252ef1}\label{main_8cpp_a59d66805ece9da6ffd55fa4cc8252ef1}} 
+\index{main.cpp@{main.cpp}!parseInput@{parseInput}}
+\index{parseInput@{parseInput}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{parseInput()}{parseInput()}}
+{\footnotesize\ttfamily void parse\+Input (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+It parses all the characters of the input buffer looking for commands. 
+
+For each word detected, it checks to see if it\textquotesingle{}s a recognised command. If it is, it adds it to a command buffer. It then passes the command buffer to the apply commands method. 
+
+Definition at line 144 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{144                  \{}
+\DoxyCodeLine{145     \textcolor{keywordtype}{int} start = 0;}
+\DoxyCodeLine{146     \textcolor{keywordtype}{int} end = 0;}
+\DoxyCodeLine{147     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} commands[6];}
+\DoxyCodeLine{148     \textcolor{keywordtype}{int} cmdIndex = 0;}
+\DoxyCodeLine{149     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} noCmd = \mbox{\hyperlink{consts_8h_a6e7ac3b6af135b1b6568c682c9671f36}{t\_NO\_COMMAND\_FOUND}};}
+\DoxyCodeLine{150     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < \mbox{\hyperlink{consts_8h_aa05149f6f7ca43b88d7be1d332b33796}{maxLen}}; i++) \{}
+\DoxyCodeLine{151         \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[i] == \textcolor{charliteral}{'\(\backslash\)0'}) \{ }
+\DoxyCodeLine{152             i = \mbox{\hyperlink{consts_8h_aa05149f6f7ca43b88d7be1d332b33796}{maxLen}}; }
+\DoxyCodeLine{153         \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{154             \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[i + 1] == 32 || \mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[i + 1] == \textcolor{charliteral}{'\(\backslash\)0'}) \{}
+\DoxyCodeLine{155                 \textcolor{comment}{// next char is space or end of input. end word}}
+\DoxyCodeLine{156                 end = i+1;}
+\DoxyCodeLine{157                 \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} cmd = \mbox{\hyperlink{main_8cpp_aa0704294fdb37af8af54e90efed55308}{getCommandFromWord}}(start, end);}
+\DoxyCodeLine{158                 \textcolor{keywordflow}{if} (cmd == noCmd) \{}
+\DoxyCodeLine{159                     \textcolor{comment}{// no command match found. check for int}}
+\DoxyCodeLine{160                     \textcolor{keywordflow}{if} (cmdIndex > 1 \&\& commands[cmdIndex -\/ 2] == \mbox{\hyperlink{consts_8h_ad3eb6610d71df44441214901b62d1375}{t\_SET}} \&\& commands[cmdIndex -\/ 1] == \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}})\{}
+\DoxyCodeLine{161                         \textcolor{comment}{// set blink. check for number}}
+\DoxyCodeLine{162                         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} num = \mbox{\hyperlink{main_8cpp_a810785218f0a23ab566a243330832a48}{getNumber}}(start, end);}
+\DoxyCodeLine{163                         \textcolor{comment}{/*}}
+\DoxyCodeLine{164 \textcolor{comment}{                        if (inDebugMode == t\_DEBUG)\{}}
+\DoxyCodeLine{165 \textcolor{comment}{                            Serial.print("{}\(\backslash\)r\(\backslash\)nNumber: "{});}}
+\DoxyCodeLine{166 \textcolor{comment}{                            Serial.print(num);}}
+\DoxyCodeLine{167 \textcolor{comment}{                        \}}}
+\DoxyCodeLine{168 \textcolor{comment}{                        */}}
+\DoxyCodeLine{169                         \textcolor{keywordflow}{if} (num > 0)\{}
+\DoxyCodeLine{170                             \textcolor{comment}{// number found}}
+\DoxyCodeLine{171                             \textcolor{keywordflow}{if} (num < 256)\{}
+\DoxyCodeLine{172                                 commands[cmdIndex] = (\textcolor{keywordtype}{unsigned} char)num;}
+\DoxyCodeLine{173                                 cmdIndex++;}
+\DoxyCodeLine{174                             \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{175                                 \textcolor{comment}{// convert int to 2 bytes...}}
+\DoxyCodeLine{176                                 commands[cmdIndex] = \mbox{\hyperlink{consts_8h_a6146bb11b2166da616e656d22bf6ed49}{t\_WORD}};}
+\DoxyCodeLine{177                                 cmdIndex++;}
+\DoxyCodeLine{178                                 commands[cmdIndex] = (num >> 8) \& 0xFF;}
+\DoxyCodeLine{179                                 cmdIndex++;}
+\DoxyCodeLine{180                                 commands[cmdIndex] = (num >> 0) \& 0xFF;}
+\DoxyCodeLine{181                                 cmdIndex++;}
+\DoxyCodeLine{182                             \}}
+\DoxyCodeLine{183                         \}}
+\DoxyCodeLine{184                             }
+\DoxyCodeLine{185                     \}}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{187                 \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{188                     \textcolor{comment}{// command match found}}
+\DoxyCodeLine{189                     commands[cmdIndex] = cmd;}
+\DoxyCodeLine{190                     cmdIndex++;}
+\DoxyCodeLine{191                 \}}
+\DoxyCodeLine{192             \}}
+\DoxyCodeLine{193             \textcolor{keywordflow}{if} (\mbox{\hyperlink{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}{input}}[i -\/ 1] == 32) \{}
+\DoxyCodeLine{194                 start = i;}
+\DoxyCodeLine{195                 end = i;}
+\DoxyCodeLine{196             \}}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{198         \}}
+\DoxyCodeLine{199     \} }
+\DoxyCodeLine{200     \textcolor{keywordflow}{if} (cmdIndex == 0) \{}
+\DoxyCodeLine{201         \textcolor{comment}{// no command recognised}}
+\DoxyCodeLine{202         Serial.print(\textcolor{stringliteral}{"{} (unrecognised command)\(\backslash\)r\(\backslash\)n"{}});}
+\DoxyCodeLine{203     \}}
+\DoxyCodeLine{204     \textcolor{comment}{/*}}
+\DoxyCodeLine{205 \textcolor{comment}{    if (inDebugMode == t\_DEBUG)\{}}
+\DoxyCodeLine{206 \textcolor{comment}{        Serial.print("{}\(\backslash\)r\(\backslash\)nI found "{});}}
+\DoxyCodeLine{207 \textcolor{comment}{        Serial.print(cmdIndex);}}
+\DoxyCodeLine{208 \textcolor{comment}{        Serial.print("{} commands.\(\backslash\)r\(\backslash\)n"{});}}
+\DoxyCodeLine{209 \textcolor{comment}{    \}}}
+\DoxyCodeLine{210 \textcolor{comment}{    */}}
+\DoxyCodeLine{211     \textcolor{keywordflow}{if} (cmdIndex > 0) \{}
+\DoxyCodeLine{212         commands[cmdIndex] = \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\_EOL}};}
+\DoxyCodeLine{213         \mbox{\hyperlink{main_8cpp_a6c1820a1656332cc7c1bdf12f88acb3f}{applyCommands}}(commands);}
+\DoxyCodeLine{214     \}}
+\DoxyCodeLine{215 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}\label{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}} 
+\index{main.cpp@{main.cpp}!setup@{setup}}
+\index{setup@{setup}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setup()}{setup()}}
+{\footnotesize\ttfamily void setup (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+The first / initial function, it\textquotesingle{}s where all initialization is done. 
+
+
+
+Definition at line 23 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{23              \{}
+\DoxyCodeLine{24     Serial.begin(9600);}
+\DoxyCodeLine{25     \textcolor{keywordflow}{while} (!Serial)\{ \textcolor{comment}{/*wait*/}\}}
+\DoxyCodeLine{26     Serial.println(\textcolor{stringliteral}{"{}For commands, type 'help'"{}});}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28     \textcolor{comment}{// d13}}
+\DoxyCodeLine{29     \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_aa5ee8f17938fa02774787e736c07163d}{ledName}} = \mbox{\hyperlink{consts_8h_a5b4eee836099c815e9f714926d96f9db}{t\_D13}};}
+\DoxyCodeLine{30     \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}} = \mbox{\hyperlink{consts_8h_a5b4eee836099c815e9f714926d96f9db}{t\_D13}};}
+\DoxyCodeLine{31     \mbox{\hyperlink{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}{d13}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}};}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33     \textcolor{comment}{// led}}
+\DoxyCodeLine{34     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_aa5ee8f17938fa02774787e736c07163d}{ledName}} = \mbox{\hyperlink{consts_8h_a2e0001554121d4105293f041cb50fcd2}{t\_LED}};}
+\DoxyCodeLine{35     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_af1e8acb263231ad2a4fc037b54958e1e}{ledPin}} = \mbox{\hyperlink{consts_8h_afc7a6314db507b22a7c623fa3f67912a}{t\_RED}};}
+\DoxyCodeLine{36     \mbox{\hyperlink{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}{led}}.\mbox{\hyperlink{structledSettings_a11d6a9ca4fe3abf0889f89bc32cc5266}{ledSetting}} = \mbox{\hyperlink{consts_8h_a7a909ff70e733622b0c6f1aacbb82ec7}{t\_BLINK}};}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39     \textcolor{comment}{// initialize pins (leds) as outputs.}}
+\DoxyCodeLine{40     pinMode(\mbox{\hyperlink{consts_8h_a5b4eee836099c815e9f714926d96f9db}{t\_D13}}, OUTPUT);        \textcolor{comment}{// built in LED}}
+\DoxyCodeLine{41     pinMode(\mbox{\hyperlink{consts_8h_afc7a6314db507b22a7c623fa3f67912a}{t\_RED}}, OUTPUT);        \textcolor{comment}{// green led}}
+\DoxyCodeLine{42     pinMode(\mbox{\hyperlink{consts_8h_afa0d75305bfa56cb95f6d6e8572fbadb}{t\_GREEN}}, OUTPUT);    \textcolor{comment}{// red led}}
+\DoxyCodeLine{43 \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}\label{main_8cpp_a9b2e423131ec20e8c9ac07674b410843}} 
+\index{main.cpp@{main.cpp}!commandEntered@{commandEntered}}
+\index{commandEntered@{commandEntered}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{commandEntered}{commandEntered}}
+{\footnotesize\ttfamily int command\+Entered = 1}
+
+
+
+used to record if a command needs to be parsed. If user presses return, this is set to 1, and input is parsed. 
+
+
+
+Definition at line 13 of file main.\+cpp.
+
+\mbox{\Hypertarget{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}\label{main_8cpp_ac0e3274266a1db05587669222c8ac4ba}} 
+\index{main.cpp@{main.cpp}!d13@{d13}}
+\index{d13@{d13}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{d13}{d13}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} d13}
+
+
+
+onboard (pin 13) led settings 
+
+
+
+Definition at line 17 of file main.\+cpp.
+
+\mbox{\Hypertarget{main_8cpp_a89878f39dcc8218e910385363adda025}\label{main_8cpp_a89878f39dcc8218e910385363adda025}} 
+\index{main.cpp@{main.cpp}!inDebugMode@{inDebugMode}}
+\index{inDebugMode@{inDebugMode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{inDebugMode}{inDebugMode}}
+{\footnotesize\ttfamily char in\+Debug\+Mode = \mbox{\hyperlink{consts_8h_afcc1614e3d604899110a4b6caff7b88a}{t\+\_\+\+EOL}}}
+
+
+
+if = t\+\_\+\+DEBUG, shows more info in console. Currently disabled for space saving purposes. 
+
+
+
+Definition at line 15 of file main.\+cpp.
+
+\mbox{\Hypertarget{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}\label{main_8cpp_aa6e9006f432c6e00af54b1a73f3bfc0e}} 
+\index{main.cpp@{main.cpp}!input@{input}}
+\index{input@{input}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{input}{input}}
+{\footnotesize\ttfamily char input\mbox{[}\mbox{\hyperlink{consts_8h_aa05149f6f7ca43b88d7be1d332b33796}{max\+Len}}+1\mbox{]}}
+
+
+
+An input buffer used to parse input from serial. 
+
+
+
+Definition at line 10 of file main.\+cpp.
+
+\mbox{\Hypertarget{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}\label{main_8cpp_a7c2f87177235c413f20dff6782cce9b6}} 
+\index{main.cpp@{main.cpp}!inputIndex@{inputIndex}}
+\index{inputIndex@{inputIndex}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{inputIndex}{inputIndex}}
+{\footnotesize\ttfamily int input\+Index = 0}
+
+
+
+used to store current index of input. 
+
+
+
+Definition at line 11 of file main.\+cpp.
+
+\mbox{\Hypertarget{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}\label{main_8cpp_a21cb3e1ffc9b2e3188c51dcaf91a9dd3}} 
+\index{main.cpp@{main.cpp}!led@{led}}
+\index{led@{led}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{led}{led}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structs_8h_a461cf1f2acdfa93afb31234d0bf4ae01}{Led\+Settings}} led}
+
+
+
+2 color led settings 
+
+
+
+Definition at line 18 of file main.\+cpp.
+
