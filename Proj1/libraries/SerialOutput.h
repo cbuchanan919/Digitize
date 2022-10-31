@@ -64,6 +64,8 @@ void showLedStatus(LedSettings *led){
 	}
 	Serial.print(F(".\r\n"));
 
+//	Serial.println("blink rate: ");
+//	Serial.println(led->blinkRate);
 }
 
 	

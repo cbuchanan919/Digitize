@@ -94,21 +94,21 @@ int getInput(){
 			if (check == 8 || check == 127) {
 				// backspace & delete
 				addChar = 0;
-									
+
 				// print new line
 				if (input[0] != '\0'){
 					Serial.print("<<");
 					Serial.println();
 				}
-				
+
 				if (inputIndex > 0) { inputIndex--; }
 				input[inputIndex] = '\0';
 
 				if (input[0] != '\0'){
 					Serial.print(input);
 				}
-				
-				
+
+
 			}
 
 			if (cont == 1 && addChar == 1) { 
@@ -120,7 +120,7 @@ int getInput(){
 		if (commandEntered == 1){
 			// command entered. show what was entered.
 			input[inputIndex] = '\0';
-		
+
 			if (inDebugMode == t_DEBUG){
 				Serial.println(F("\r\nYou Wrote: "));
 				Serial.println(input);
@@ -130,7 +130,7 @@ int getInput(){
 				Serial.println();
 				showInputDetails(&input[0], maxLen);
 			}
-		
+
 		}
 	}
 	return commandEntered;
@@ -160,12 +160,12 @@ void parseInput(){
 					if (cmdIndex > 1 && commands[cmdIndex - 2] == t_SET && commands[cmdIndex - 1] == t_BLINK){
 						// set blink. check for number
 						unsigned int num = getNumber(start, end);
-						/*
+
 						if (inDebugMode == t_DEBUG){
 							Serial.print(F("\r\nNumber: "));
 							Serial.print(num);
 						}
-						*/
+
 						if (num > 0){
 							// number found
 							if (num < 256){
@@ -181,7 +181,7 @@ void parseInput(){
 								cmdIndex++;
 							}
 						}
-							
+
 					}
 
 				} else {
@@ -240,7 +240,7 @@ unsigned char getCommandFromWord(int start, int end){
 	}
 
 	if (inDebugMode == t_DEBUG){ Serial.println(F("no command found")); }
-	
+
 	return t_NO_COMMAND_FOUND;
 }
 
@@ -276,6 +276,7 @@ void applyCommands(unsigned char newCmd[6]){
 					break;
 				case t_BLINK:
 					d13.ledSetting = t_BLINK;
+//					Serial.print("here");
 					break;
 				default:
 					break;
@@ -313,29 +314,29 @@ void applyCommands(unsigned char newCmd[6]){
 			switch (newCmd[1]){
 				case t_BLINK:
 					{
-					unsigned int blinkRate = 0;
-					switch (newCmd[2]){
-						case t_WORD:
+						unsigned int blinkRate = 0;
+						switch (newCmd[2]){
+							case t_WORD:
 								blinkRate = (newCmd[3] << 8) + newCmd[4];
-							break;
-						case t_EOL:
-							// badly implemented.
-							break;
-						default:
-							unsigned char c = newCmd[2];
-							blinkRate = (unsigned int)c;
-						break;
-					}
-					
-					if (inDebugMode == t_DEBUG){
-						Serial.print(F("The converted int: "));
-						Serial.print(blinkRate);
-					}
-					
-					if (blinkRate > 0){
-						led.blinkRate = blinkRate;
-						d13.blinkRate = blinkRate;	
-					}
+								break;
+							case t_EOL:
+								// badly implemented.
+								break;
+							default:
+								unsigned char c = newCmd[2];
+								blinkRate = (unsigned int)c;
+								break;
+						}
+
+						if (inDebugMode == t_DEBUG){
+							Serial.print(F("The converted int: "));
+							Serial.print(blinkRate);
+						}
+
+						if (blinkRate > 0){
+							led.blinkRate = blinkRate;
+							d13.blinkRate = blinkRate;	
+						}
 					}
 					break;
 				default:
@@ -344,7 +345,7 @@ void applyCommands(unsigned char newCmd[6]){
 			break;
 
 		case t_DEBUG:
-			
+
 			if (newCmd[1] == t_ON) {
 				inDebugMode = t_DEBUG;
 				Serial.println(F("\r\ndebug mode on"));
@@ -352,7 +353,7 @@ void applyCommands(unsigned char newCmd[6]){
 				inDebugMode = t_EOL;
 				Serial.println(F("\r\ndebug mode off"));
 			}
-			
+
 			break;
 		case t_HELP:
 			showHelp();
@@ -382,14 +383,18 @@ void applyCommands(unsigned char newCmd[6]){
  * */
 void ledControl(LedSettings *led, char override){
 	int currentMillis = millis();
+	if (inDebugMode == t_DEBUG){
+		if (override == t_ON){
+			Serial.println("(LED Forced update)");}
+	}
 	if (currentMillis - led->previousMillis >= led->blinkRate || override == t_ON){
 		led->previousMillis = currentMillis;
 		switch (led->ledSetting) {
 			case t_ALT:
 				{
-				char tmpPrev = led->ledLastPin;
-				led->ledLastPin = led->ledPin;
-				led->ledPin = tmpPrev;
+					char tmpPrev = led->ledLastPin;
+					led->ledLastPin = led->ledPin;
+					led->ledPin = tmpPrev;
 				}
 				break;
 			case t_BLINK:
