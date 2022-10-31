@@ -5,8 +5,8 @@
 #define t_LEDS 3
 #define t_ALT 4
 
-#define t_GREEN 7
-#define t_RED 8
+#define t_GREEN 5
+#define t_RED 6
 
 #define t_SET 9
 #define t_BLINK 10

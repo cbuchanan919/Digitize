@@ -11,6 +11,9 @@ My laptop is running Ubuntu 22.04.1 LTS and it has arduino version 1.8.19 instal
 
 ### Notes:
 Getting arduino installed & the IDE talking to the arduino board was relatively easy. Getting the makefile installed & configured properly was very challenging for me. I had to configure the ~/.bashrc file to add the necessary make paths, google error messages, and add the include arduino.h in the main file, (etc).
-
+From ~/.bashrc
+export ARDUINO_DIR=/usr/share/arduino
+export ARDMK_DIR=/home/digitize/Documents/Arduino-Makefile
+export AVR_TOOLS_DIR=/usr/share/arduino/hardware/tools/avr
 
 
