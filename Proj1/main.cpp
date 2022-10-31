@@ -23,7 +23,7 @@ LedSettings led;		///< 2 color led settings
 void setup() {
 	Serial.begin(9600);
 	while (!Serial){ /*wait*/}
-	Serial.println("For commands, type 'help'");
+	Serial.println(F("For commands, type 'help'"));
 
 	// d13
 	d13.ledName = t_D13;
@@ -79,7 +79,7 @@ int getInput(){
 		if (commandEntered == 1){
 			clearInput();
 			commandEntered = 0;
-			Serial.println("\r\nEnter command:");
+			Serial.println(F("\r\nEnter command:"));
 		}
 		if (Serial.available() > 0){
 			addChar = 1;
@@ -120,17 +120,17 @@ int getInput(){
 		if (commandEntered == 1){
 			// command entered. show what was entered.
 			input[inputIndex] = '\0';
-			/*
+		
 			if (inDebugMode == t_DEBUG){
-				Serial.println("\r\nYou Wrote: ");
+				Serial.println(F("\r\nYou Wrote: "));
 				Serial.println(input);
-				Serial.println('\r\n');
-				Serial.print("InputIndex: ");
+				Serial.println("\r\n");
+				Serial.print(F("InputIndex: "));
 				Serial.print(inputIndex);
 				Serial.println();
 				showInputDetails(&input[0], maxLen);
 			}
-			*/
+		
 		}
 	}
 	return commandEntered;
@@ -162,7 +162,7 @@ void parseInput(){
 						unsigned int num = getNumber(start, end);
 						/*
 						if (inDebugMode == t_DEBUG){
-							Serial.print("\r\nNumber: ");
+							Serial.print(F("\r\nNumber: "));
 							Serial.print(num);
 						}
 						*/
@@ -199,15 +199,15 @@ void parseInput(){
 	} 
 	if (cmdIndex == 0) {
 		// no command recognised
-		Serial.print(" (unrecognised command)\r\n");
+		Serial.print(F(" (unrecognised command)\r\n"));
 	}
-	/*
+
 	if (inDebugMode == t_DEBUG){
-		Serial.print("\r\nI found ");
+		Serial.print(F("\r\nI found "));
 		Serial.print(cmdIndex);
-		Serial.print(" commands.\r\n");
+		Serial.print(F(" commands.\r\n"));
 	}
-	*/
+
 	if (cmdIndex > 0) {
 		commands[cmdIndex] = t_EOL;
 		applyCommands(commands);
@@ -238,9 +238,9 @@ unsigned char getCommandFromWord(int start, int end){
 			}
 		}	
 	}
-	/*
-	if (inDebugMode == t_DEBUG){ Serial.println("no command found"); }
-	*/
+
+	if (inDebugMode == t_DEBUG){ Serial.println(F("no command found")); }
+	
 	return t_NO_COMMAND_FOUND;
 }
 
@@ -326,12 +326,12 @@ void applyCommands(unsigned char newCmd[6]){
 							blinkRate = (unsigned int)c;
 						break;
 					}
-					/*
+					
 					if (inDebugMode == t_DEBUG){
-						Serial.print("The converted int: ");
+						Serial.print(F("The converted int: "));
 						Serial.print(blinkRate);
 					}
-					*/
+					
 					if (blinkRate > 0){
 						led.blinkRate = blinkRate;
 						d13.blinkRate = blinkRate;	
@@ -344,15 +344,15 @@ void applyCommands(unsigned char newCmd[6]){
 			break;
 
 		case t_DEBUG:
-			/*
+			
 			if (newCmd[1] == t_ON) {
 				inDebugMode = t_DEBUG;
-				Serial.println("\r\ndebug mode on");
+				Serial.println(F("\r\ndebug mode on"));
 			} else if (newCmd[1] == t_OFF) {
 				inDebugMode = t_EOL;
-				Serial.println("\r\ndebug mode off");
+				Serial.println(F("\r\ndebug mode off"));
 			}
-			*/
+			
 			break;
 		case t_HELP:
 			showHelp();
